@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./user";
+
+message Request {
+  string ping = 1;
+}
+
+message Response {
+  string pong = 1;
+}
+
+service User {
+  rpc Ping(Request) returns(Response);
+  rpc GetUserInfoBy(GetUserInfoRequest) returns(UserInfoResponse);
+  rpc UpdateUserInfo(GetUserInfoRequest) returns(UserInfoResponse);
+}
+
+message GetUserInfoRequest {
+  int64 Id = 1;
+  string Username = 2;
+  string Email = 3;
+  string DisplayName = 4;
+  string Arg = 5;
+}
+
+message UserInfoResponse {
+  int64 Id = 1;
+  string Username = 2;
+  string Email = 3;
+  string DisplayName = 4;
+  string UpdatedAt = 5;
+  string CreatedAt = 6;
+  repeated string  Roles = 7;
+}
+// goctl rpc protoc user.proto --go_out=.  --go-grpc_out=.  --zrpc_out=.
+// goctl rpc protoc user.proto --go_out=./user --go-grpc_out=./user --zrpc_out=.
+
+// goctl rpc protoc user.proto --go_out=./user --go-grpc_out=./user --zrpc_out=./client

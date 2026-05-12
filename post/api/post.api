@@ -1,0 +1,81 @@
+syntax = "v1"
+
+type (
+	PostRequest {
+		AuthorId  int64  `json:"authorId"`
+		SectionId int64  `json:"sectionId"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+	}
+	Post {
+		Id        int64  `json:"id"`
+		AuthorId  int64  `json:"authorId"`
+		SectionId int64  `json:"sectionId"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+		ViewCount int64  `json:"viewCount"`
+		Pinned    bool   `json:"pinned"`
+		Featured  bool   `json:"featured"`
+		CreatedAt string `json:"createdAt"`
+		UpdatedAt string `json:"updatedAt"`
+	}
+	PostMeta {
+		Id        int64  `json:"id"`
+		AuthorId  int64  `json:"authorId"`
+		SectionId int64  `json:"sectionId"`
+		Title     string `json:"title"`
+	}
+	IdPathReq {
+		Id int64 `path:"id"`
+	}
+	UpdatePostReq {
+		Id        int64  `path:"id"`
+		AuthorId  int64  `json:"authorId"`
+		SectionId int64  `json:"sectionId"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+	}
+	ToggleReq {
+		Id    int64 `path:"id"`
+		Value bool  `form:"value"`
+	}
+	PostResp {
+		Data Post `json:"data"`
+	}
+	ExistsResp {
+		Data bool `json:"data"`
+	}
+	PostMetaResp {
+		Data PostMeta `json:"data"`
+	}
+	CommonResp {
+		Message string `json:"message,optional"`
+	}
+)
+
+service post-api {
+	@handler CreatePost
+	post /api/posts (PostRequest) returns (PostResp)
+
+	@handler GetPost
+	get /api/posts/:id (IdPathReq) returns (PostResp)
+
+	@handler UpdatePost
+	put /api/posts/:id (UpdatePostReq) returns (PostResp)
+
+	@handler DeletePost
+	delete /api/posts/:id (IdPathReq) returns (CommonResp)
+
+	@handler PinPost
+	post /api/posts/:id/pin (ToggleReq) returns (CommonResp)
+
+	@handler FeaturePost
+	post /api/posts/:id/feature (ToggleReq) returns (CommonResp)
+
+	@handler ExistsPost
+	get /api/posts/:id/exists (IdPathReq) returns (ExistsResp)
+
+	@handler MetaPost
+	get /api/posts/:id/meta (IdPathReq) returns (PostMetaResp)
+}
+

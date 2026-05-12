@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package section;
+option go_package = "./section/rpc";
+
+service SectionService {
+  rpc CreateSection (CreateSectionRequest) returns (CreateSectionResponse);
+  rpc UpdateSection (UpdateSectionRequest) returns (UpdateSectionResponse);
+  rpc DeleteSection (DeleteSectionRequest) returns (DeleteSectionResponse);
+}
+
+message SectionRequest {
+  string Title = 1;
+  string Description = 2;
+  int64 OrderIndex = 3;
+  bool Visibility = 4;
+}
+
+message SectionResponse{
+  int64 Id = 1;
+  string Title = 2;
+  string Description = 3;
+  int64 OrderIndex = 4;
+  bool Visibility = 5;
+  string CreatedAt = 6;
+  string UpdatedAt = 7;
+}
+
+message CreateSectionRequest {
+  string title = 1;
+  string description = 2;
+  int64 orderIndex = 3;
+  bool visibility = 4;
+}
+
+message CreateSectionResponse {
+  SectionResponse Section = 1;
+}
+
+message UpdateSectionRequest {
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  int64 orderIndex = 4;
+  bool visibility = 5;
+}
+
+message UpdateSectionResponse {
+  SectionResponse Section = 1;
+}
+
+message DeleteSectionRequest {
+  int64 id = 1;
+}
+
+message DeleteSectionResponse {
+  bool Success = 1;
+  string Message = 2;
+}
+

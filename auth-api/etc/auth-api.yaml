@@ -1,0 +1,12 @@
+Name: auth-api
+Host: 0.0.0.0
+Port: 8001
+
+JwtSecret: this is a secret
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
