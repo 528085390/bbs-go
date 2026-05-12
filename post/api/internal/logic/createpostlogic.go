@@ -27,6 +27,6 @@ func NewCreatePostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreatePostLogic) CreatePost(req *types.PostRequest) (resp *types.PostResp, err error) {
-
+    //todo
 	return
 }
