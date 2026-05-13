@@ -21,6 +21,42 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Empty struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Empty) Reset() {
+	*x = Empty{}
+	mi := &file_section_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Empty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Empty) ProtoMessage() {}
+
+func (x *Empty) ProtoReflect() protoreflect.Message {
+	mi := &file_section_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
+func (*Empty) Descriptor() ([]byte, []int) {
+	return file_section_proto_rawDescGZIP(), []int{0}
+}
+
 type SectionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=Title,proto3" json:"Title,omitempty"`
@@ -33,7 +69,7 @@ type SectionRequest struct {
 
 func (x *SectionRequest) Reset() {
 	*x = SectionRequest{}
-	mi := &file_section_proto_msgTypes[0]
+	mi := &file_section_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +81,7 @@ func (x *SectionRequest) String() string {
 func (*SectionRequest) ProtoMessage() {}
 
 func (x *SectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[0]
+	mi := &file_section_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +94,7 @@ func (x *SectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SectionRequest.ProtoReflect.Descriptor instead.
 func (*SectionRequest) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{0}
+	return file_section_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SectionRequest) GetTitle() string {
@@ -104,7 +140,7 @@ type SectionResponse struct {
 
 func (x *SectionResponse) Reset() {
 	*x = SectionResponse{}
-	mi := &file_section_proto_msgTypes[1]
+	mi := &file_section_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -116,7 +152,7 @@ func (x *SectionResponse) String() string {
 func (*SectionResponse) ProtoMessage() {}
 
 func (x *SectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[1]
+	mi := &file_section_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -129,7 +165,7 @@ func (x *SectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SectionResponse.ProtoReflect.Descriptor instead.
 func (*SectionResponse) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{1}
+	return file_section_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SectionResponse) GetId() int64 {
@@ -193,7 +229,7 @@ type CreateSectionRequest struct {
 
 func (x *CreateSectionRequest) Reset() {
 	*x = CreateSectionRequest{}
-	mi := &file_section_proto_msgTypes[2]
+	mi := &file_section_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -205,7 +241,7 @@ func (x *CreateSectionRequest) String() string {
 func (*CreateSectionRequest) ProtoMessage() {}
 
 func (x *CreateSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[2]
+	mi := &file_section_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -218,7 +254,7 @@ func (x *CreateSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSectionRequest.ProtoReflect.Descriptor instead.
 func (*CreateSectionRequest) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{2}
+	return file_section_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateSectionRequest) GetTitle() string {
@@ -258,7 +294,7 @@ type CreateSectionResponse struct {
 
 func (x *CreateSectionResponse) Reset() {
 	*x = CreateSectionResponse{}
-	mi := &file_section_proto_msgTypes[3]
+	mi := &file_section_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -270,7 +306,7 @@ func (x *CreateSectionResponse) String() string {
 func (*CreateSectionResponse) ProtoMessage() {}
 
 func (x *CreateSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[3]
+	mi := &file_section_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -283,7 +319,7 @@ func (x *CreateSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSectionResponse.ProtoReflect.Descriptor instead.
 func (*CreateSectionResponse) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{3}
+	return file_section_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateSectionResponse) GetSection() *SectionResponse {
@@ -306,7 +342,7 @@ type UpdateSectionRequest struct {
 
 func (x *UpdateSectionRequest) Reset() {
 	*x = UpdateSectionRequest{}
-	mi := &file_section_proto_msgTypes[4]
+	mi := &file_section_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +354,7 @@ func (x *UpdateSectionRequest) String() string {
 func (*UpdateSectionRequest) ProtoMessage() {}
 
 func (x *UpdateSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[4]
+	mi := &file_section_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +367,7 @@ func (x *UpdateSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSectionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSectionRequest) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{4}
+	return file_section_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UpdateSectionRequest) GetId() int64 {
@@ -378,7 +414,7 @@ type UpdateSectionResponse struct {
 
 func (x *UpdateSectionResponse) Reset() {
 	*x = UpdateSectionResponse{}
-	mi := &file_section_proto_msgTypes[5]
+	mi := &file_section_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -390,7 +426,7 @@ func (x *UpdateSectionResponse) String() string {
 func (*UpdateSectionResponse) ProtoMessage() {}
 
 func (x *UpdateSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[5]
+	mi := &file_section_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -403,7 +439,7 @@ func (x *UpdateSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSectionResponse.ProtoReflect.Descriptor instead.
 func (*UpdateSectionResponse) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{5}
+	return file_section_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateSectionResponse) GetSection() *SectionResponse {
@@ -422,7 +458,7 @@ type DeleteSectionRequest struct {
 
 func (x *DeleteSectionRequest) Reset() {
 	*x = DeleteSectionRequest{}
-	mi := &file_section_proto_msgTypes[6]
+	mi := &file_section_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -434,7 +470,7 @@ func (x *DeleteSectionRequest) String() string {
 func (*DeleteSectionRequest) ProtoMessage() {}
 
 func (x *DeleteSectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[6]
+	mi := &file_section_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -447,7 +483,7 @@ func (x *DeleteSectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSectionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSectionRequest) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{6}
+	return file_section_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteSectionRequest) GetId() int64 {
@@ -467,7 +503,7 @@ type DeleteSectionResponse struct {
 
 func (x *DeleteSectionResponse) Reset() {
 	*x = DeleteSectionResponse{}
-	mi := &file_section_proto_msgTypes[7]
+	mi := &file_section_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +515,7 @@ func (x *DeleteSectionResponse) String() string {
 func (*DeleteSectionResponse) ProtoMessage() {}
 
 func (x *DeleteSectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_section_proto_msgTypes[7]
+	mi := &file_section_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +528,7 @@ func (x *DeleteSectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSectionResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSectionResponse) Descriptor() ([]byte, []int) {
-	return file_section_proto_rawDescGZIP(), []int{7}
+	return file_section_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeleteSectionResponse) GetSuccess() bool {
@@ -509,11 +545,108 @@ func (x *DeleteSectionResponse) GetMessage() string {
 	return ""
 }
 
+type SectionListResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	List          []*SectionResponse     `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SectionListResponse) Reset() {
+	*x = SectionListResponse{}
+	mi := &file_section_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SectionListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SectionListResponse) ProtoMessage() {}
+
+func (x *SectionListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_section_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SectionListResponse.ProtoReflect.Descriptor instead.
+func (*SectionListResponse) Descriptor() ([]byte, []int) {
+	return file_section_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SectionListResponse) GetList() []*SectionResponse {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
+func (x *SectionListResponse) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type GetSectionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSectionRequest) Reset() {
+	*x = GetSectionRequest{}
+	mi := &file_section_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSectionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSectionRequest) ProtoMessage() {}
+
+func (x *GetSectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_section_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSectionRequest.ProtoReflect.Descriptor instead.
+func (*GetSectionRequest) Descriptor() ([]byte, []int) {
+	return file_section_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetSectionRequest) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 var File_section_proto protoreflect.FileDescriptor
 
 const file_section_proto_rawDesc = "" +
 	"\n" +
-	"\rsection.proto\x12\asection\"\x88\x01\n" +
+	"\rsection.proto\x12\asection\"\a\n" +
+	"\x05Empty\"\x88\x01\n" +
 	"\x0eSectionRequest\x12\x14\n" +
 	"\x05Title\x18\x01 \x01(\tR\x05Title\x12 \n" +
 	"\vDescription\x18\x02 \x01(\tR\vDescription\x12\x1e\n" +
@@ -562,11 +695,19 @@ const file_section_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"K\n" +
 	"\x15DeleteSectionResponse\x12\x18\n" +
 	"\aSuccess\x18\x01 \x01(\bR\aSuccess\x12\x18\n" +
-	"\aMessage\x18\x02 \x01(\tR\aMessage2\x80\x02\n" +
+	"\aMessage\x18\x02 \x01(\tR\aMessage\"Y\n" +
+	"\x13SectionListResponse\x12,\n" +
+	"\x04list\x18\x01 \x03(\v2\x18.section.SectionResponseR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"#\n" +
+	"\x11GetSectionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id2\x82\x03\n" +
 	"\x0eSectionService\x12N\n" +
 	"\rCreateSection\x12\x1d.section.CreateSectionRequest\x1a\x1e.section.CreateSectionResponse\x12N\n" +
 	"\rUpdateSection\x12\x1d.section.UpdateSectionRequest\x1a\x1e.section.UpdateSectionResponse\x12N\n" +
-	"\rDeleteSection\x12\x1d.section.DeleteSectionRequest\x1a\x1e.section.DeleteSectionResponseB\x0fZ\r./section/rpcb\x06proto3"
+	"\rDeleteSection\x12\x1d.section.DeleteSectionRequest\x1a\x1e.section.DeleteSectionResponse\x12<\n" +
+	"\fListSections\x12\x0e.section.Empty\x1a\x1c.section.SectionListResponse\x12B\n" +
+	"\n" +
+	"GetSection\x12\x1a.section.GetSectionRequest\x1a\x18.section.SectionResponseB\x0fZ\r./section/rpcb\x06proto3"
 
 var (
 	file_section_proto_rawDescOnce sync.Once
@@ -580,31 +721,39 @@ func file_section_proto_rawDescGZIP() []byte {
 	return file_section_proto_rawDescData
 }
 
-var file_section_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_section_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_section_proto_goTypes = []any{
-	(*SectionRequest)(nil),        // 0: section.SectionRequest
-	(*SectionResponse)(nil),       // 1: section.SectionResponse
-	(*CreateSectionRequest)(nil),  // 2: section.CreateSectionRequest
-	(*CreateSectionResponse)(nil), // 3: section.CreateSectionResponse
-	(*UpdateSectionRequest)(nil),  // 4: section.UpdateSectionRequest
-	(*UpdateSectionResponse)(nil), // 5: section.UpdateSectionResponse
-	(*DeleteSectionRequest)(nil),  // 6: section.DeleteSectionRequest
-	(*DeleteSectionResponse)(nil), // 7: section.DeleteSectionResponse
+	(*Empty)(nil),                 // 0: section.Empty
+	(*SectionRequest)(nil),        // 1: section.SectionRequest
+	(*SectionResponse)(nil),       // 2: section.SectionResponse
+	(*CreateSectionRequest)(nil),  // 3: section.CreateSectionRequest
+	(*CreateSectionResponse)(nil), // 4: section.CreateSectionResponse
+	(*UpdateSectionRequest)(nil),  // 5: section.UpdateSectionRequest
+	(*UpdateSectionResponse)(nil), // 6: section.UpdateSectionResponse
+	(*DeleteSectionRequest)(nil),  // 7: section.DeleteSectionRequest
+	(*DeleteSectionResponse)(nil), // 8: section.DeleteSectionResponse
+	(*SectionListResponse)(nil),   // 9: section.SectionListResponse
+	(*GetSectionRequest)(nil),     // 10: section.GetSectionRequest
 }
 var file_section_proto_depIdxs = []int32{
-	1, // 0: section.CreateSectionResponse.Section:type_name -> section.SectionResponse
-	1, // 1: section.UpdateSectionResponse.Section:type_name -> section.SectionResponse
-	2, // 2: section.SectionService.CreateSection:input_type -> section.CreateSectionRequest
-	4, // 3: section.SectionService.UpdateSection:input_type -> section.UpdateSectionRequest
-	6, // 4: section.SectionService.DeleteSection:input_type -> section.DeleteSectionRequest
-	3, // 5: section.SectionService.CreateSection:output_type -> section.CreateSectionResponse
-	5, // 6: section.SectionService.UpdateSection:output_type -> section.UpdateSectionResponse
-	7, // 7: section.SectionService.DeleteSection:output_type -> section.DeleteSectionResponse
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2,  // 0: section.CreateSectionResponse.Section:type_name -> section.SectionResponse
+	2,  // 1: section.UpdateSectionResponse.Section:type_name -> section.SectionResponse
+	2,  // 2: section.SectionListResponse.list:type_name -> section.SectionResponse
+	3,  // 3: section.SectionService.CreateSection:input_type -> section.CreateSectionRequest
+	5,  // 4: section.SectionService.UpdateSection:input_type -> section.UpdateSectionRequest
+	7,  // 5: section.SectionService.DeleteSection:input_type -> section.DeleteSectionRequest
+	0,  // 6: section.SectionService.ListSections:input_type -> section.Empty
+	10, // 7: section.SectionService.GetSection:input_type -> section.GetSectionRequest
+	4,  // 8: section.SectionService.CreateSection:output_type -> section.CreateSectionResponse
+	6,  // 9: section.SectionService.UpdateSection:output_type -> section.UpdateSectionResponse
+	8,  // 10: section.SectionService.DeleteSection:output_type -> section.DeleteSectionResponse
+	9,  // 11: section.SectionService.ListSections:output_type -> section.SectionListResponse
+	2,  // 12: section.SectionService.GetSection:output_type -> section.SectionResponse
+	8,  // [8:13] is the sub-list for method output_type
+	3,  // [3:8] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_section_proto_init() }
@@ -618,7 +767,7 @@ func file_section_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_section_proto_rawDesc), len(file_section_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

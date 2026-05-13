@@ -7,7 +7,11 @@ service SectionService {
   rpc CreateSection (CreateSectionRequest) returns (CreateSectionResponse);
   rpc UpdateSection (UpdateSectionRequest) returns (UpdateSectionResponse);
   rpc DeleteSection (DeleteSectionRequest) returns (DeleteSectionResponse);
+  rpc ListSections(Empty) returns (SectionListResponse);
+  rpc GetSection (GetSectionRequest) returns (SectionResponse);
 }
+
+message Empty {}
 
 message SectionRequest {
   string Title = 1;
@@ -56,5 +60,15 @@ message DeleteSectionRequest {
 message DeleteSectionResponse {
   bool Success = 1;
   string Message = 2;
+}
+
+
+message SectionListResponse {
+  repeated SectionResponse list = 1;
+  int64 total = 2;
+}
+
+message GetSectionRequest {
+  uint64 id = 1;
 }
 

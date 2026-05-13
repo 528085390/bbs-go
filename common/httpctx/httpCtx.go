@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"temp/common/valid"
 
 	"google.golang.org/grpc/metadata"
 )
@@ -27,6 +28,10 @@ func GetUserId(ctx context.Context) (int64, error) {
 	err = json.Unmarshal(Vals, &userId)
 	if err != nil {
 		return 0, err
+	}
+	err = valid.IsValidInt(int64(userId))
+	if err != nil {
+		return 0, errors.New("用户id错误")
 	}
 	return int64(userId), nil
 }

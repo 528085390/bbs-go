@@ -4,47 +4,56 @@ Port: 8888
 
 JwtSecret: this is a secret
 
-Etcd:
-  Hosts:
-    - 127.0.0.1:2379
-  Key: gateway
+#Etcd:
+#  Hosts:
+#    - 127.0.0.1:2379
+#  Key: gateway
 
 # 上游服务配置
 Upstreams:
   # User RPC 服务
   - Grpc:
-      Etcd:
-        Hosts:
-          - localhost:2379
-        Key: user.rpc
-      # 如果本地开发没有 etcd，使用直接连接
-      # Target: localhost:8080
+      # 生产/联调用：etcd 服务发现
+#      Etcd:
+#        Hosts:
+#          - localhost:2379
+#        Key: user.rpc
+      # 本地直连（启用时请注释掉上面的 Etcd）
+       Target: localhost:8004
     Mappings:
-      # GET /api/user/ping -> user.User/Ping
       - Method: get
         Path: /api/user/ping
         RpcPath: user.User/Ping
-      
-      # POST /api/user/info -> user.User/GetUserInfoBy
+
       - Method: post
         Path: /api/user/id
         RpcPath: user.User/GetUserInfoBy
-      
-      # PUT /api/user/info -> user.User/UpdateUserInfo
+
       - Method: put
         Path: /api/user/id
         RpcPath: user.User/UpdateUserInfo
 
-
+  # Section RPC 服务
   - Grpc:
+      # 生产/联调用：etcd 服务发现
       Etcd:
         Hosts:
           - localhost:2379
         Key: section.rpc
+      # 本地直连（启用时请注释掉上面的 Etcd）
+      # Target: localhost:8081
     Mappings:
       - Method: post
         Path: /api/sections
         RpcPath: section.SectionService/CreateSection
+
+      - Method: get
+        Path: /api/sections
+        RpcPath: section.SectionService/ListSections
+
+      - Method: get
+        Path: /api/sections/:id
+        RpcPath: section.SectionService/GetSection
 
       - Method: put
         Path: /api/sections/:id
@@ -54,3 +63,44 @@ Upstreams:
         Path: /api/sections/:id
         RpcPath: section.SectionService/DeleteSection
 
+  # Post RPC 服务
+  - Grpc:
+      # 生产/联调用：etcd 服务发现
+#      Etcd:
+#        Hosts:
+#          - localhost:2379
+#        Key: post.rpc
+      # 本地直连（启用时请注释掉上面的 Etcd）
+       Target: localhost:8005
+    Mappings:
+      - Method: post
+        Path: /api/posts
+        RpcPath: post.PostService/CreatePost
+
+      - Method: get
+        Path: /api/posts/:id
+        RpcPath: post.PostService/GetPost
+
+      - Method: put
+        Path: /api/posts/:id
+        RpcPath: post.PostService/UpdatePost
+
+      - Method: delete
+        Path: /api/posts/:id
+        RpcPath: post.PostService/DeletePost
+
+      - Method: post
+        Path: /api/posts/:id/pin
+        RpcPath: post.PostService/PinPost
+
+      - Method: post
+        Path: /api/posts/:id/feature
+        RpcPath: post.PostService/FeaturePost
+
+      - Method: get
+        Path: /api/posts/:id/exists
+        RpcPath: post.PostService/ExistsPost
+
+      - Method: get
+        Path: /api/posts/:id/meta
+        RpcPath: post.PostService/MetaPost

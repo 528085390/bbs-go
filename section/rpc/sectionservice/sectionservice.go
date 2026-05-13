@@ -18,6 +18,9 @@ type (
 	CreateSectionResponse = rpc.CreateSectionResponse
 	DeleteSectionRequest  = rpc.DeleteSectionRequest
 	DeleteSectionResponse = rpc.DeleteSectionResponse
+	Empty                 = rpc.Empty
+	GetSectionRequest     = rpc.GetSectionRequest
+	SectionListResponse   = rpc.SectionListResponse
 	SectionRequest        = rpc.SectionRequest
 	SectionResponse       = rpc.SectionResponse
 	UpdateSectionRequest  = rpc.UpdateSectionRequest
@@ -27,6 +30,8 @@ type (
 		CreateSection(ctx context.Context, in *CreateSectionRequest, opts ...grpc.CallOption) (*CreateSectionResponse, error)
 		UpdateSection(ctx context.Context, in *UpdateSectionRequest, opts ...grpc.CallOption) (*UpdateSectionResponse, error)
 		DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*DeleteSectionResponse, error)
+		ListSections(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SectionListResponse, error)
+		GetSection(ctx context.Context, in *GetSectionRequest, opts ...grpc.CallOption) (*SectionResponse, error)
 	}
 
 	defaultSectionService struct {
@@ -53,4 +58,14 @@ func (m *defaultSectionService) UpdateSection(ctx context.Context, in *UpdateSec
 func (m *defaultSectionService) DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*DeleteSectionResponse, error) {
 	client := rpc.NewSectionServiceClient(m.cli.Conn())
 	return client.DeleteSection(ctx, in, opts...)
+}
+
+func (m *defaultSectionService) ListSections(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SectionListResponse, error) {
+	client := rpc.NewSectionServiceClient(m.cli.Conn())
+	return client.ListSections(ctx, in, opts...)
+}
+
+func (m *defaultSectionService) GetSection(ctx context.Context, in *GetSectionRequest, opts ...grpc.CallOption) (*SectionResponse, error) {
+	client := rpc.NewSectionServiceClient(m.cli.Conn())
+	return client.GetSection(ctx, in, opts...)
 }

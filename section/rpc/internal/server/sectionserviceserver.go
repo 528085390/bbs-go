@@ -6,6 +6,7 @@ package server
 
 import (
 	"context"
+
 	"temp/section/rpc/internal/logic"
 	"temp/section/rpc/internal/svc"
 	"temp/section/rpc/section/rpc"
@@ -35,4 +36,14 @@ func (s *SectionServiceServer) UpdateSection(ctx context.Context, in *rpc.Update
 func (s *SectionServiceServer) DeleteSection(ctx context.Context, in *rpc.DeleteSectionRequest) (*rpc.DeleteSectionResponse, error) {
 	l := logic.NewDeleteSectionLogic(ctx, s.svcCtx)
 	return l.DeleteSection(in)
+}
+
+func (s *SectionServiceServer) ListSections(ctx context.Context, in *rpc.Empty) (*rpc.SectionListResponse, error) {
+	l := logic.NewListSectionsLogic(ctx, s.svcCtx)
+	return l.ListSections(in)
+}
+
+func (s *SectionServiceServer) GetSection(ctx context.Context, in *rpc.GetSectionRequest) (*rpc.SectionResponse, error) {
+	l := logic.NewGetSectionLogic(ctx, s.svcCtx)
+	return l.GetSection(in)
 }

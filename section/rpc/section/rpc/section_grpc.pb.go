@@ -22,6 +22,8 @@ const (
 	SectionService_CreateSection_FullMethodName = "/section.SectionService/CreateSection"
 	SectionService_UpdateSection_FullMethodName = "/section.SectionService/UpdateSection"
 	SectionService_DeleteSection_FullMethodName = "/section.SectionService/DeleteSection"
+	SectionService_ListSections_FullMethodName  = "/section.SectionService/ListSections"
+	SectionService_GetSection_FullMethodName    = "/section.SectionService/GetSection"
 )
 
 // SectionServiceClient is the client API for SectionService service.
@@ -31,6 +33,8 @@ type SectionServiceClient interface {
 	CreateSection(ctx context.Context, in *CreateSectionRequest, opts ...grpc.CallOption) (*CreateSectionResponse, error)
 	UpdateSection(ctx context.Context, in *UpdateSectionRequest, opts ...grpc.CallOption) (*UpdateSectionResponse, error)
 	DeleteSection(ctx context.Context, in *DeleteSectionRequest, opts ...grpc.CallOption) (*DeleteSectionResponse, error)
+	ListSections(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SectionListResponse, error)
+	GetSection(ctx context.Context, in *GetSectionRequest, opts ...grpc.CallOption) (*SectionResponse, error)
 }
 
 type sectionServiceClient struct {
@@ -71,6 +75,26 @@ func (c *sectionServiceClient) DeleteSection(ctx context.Context, in *DeleteSect
 	return out, nil
 }
 
+func (c *sectionServiceClient) ListSections(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SectionListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SectionListResponse)
+	err := c.cc.Invoke(ctx, SectionService_ListSections_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sectionServiceClient) GetSection(ctx context.Context, in *GetSectionRequest, opts ...grpc.CallOption) (*SectionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SectionResponse)
+	err := c.cc.Invoke(ctx, SectionService_GetSection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SectionServiceServer is the server API for SectionService service.
 // All implementations must embed UnimplementedSectionServiceServer
 // for forward compatibility.
@@ -78,6 +102,8 @@ type SectionServiceServer interface {
 	CreateSection(context.Context, *CreateSectionRequest) (*CreateSectionResponse, error)
 	UpdateSection(context.Context, *UpdateSectionRequest) (*UpdateSectionResponse, error)
 	DeleteSection(context.Context, *DeleteSectionRequest) (*DeleteSectionResponse, error)
+	ListSections(context.Context, *Empty) (*SectionListResponse, error)
+	GetSection(context.Context, *GetSectionRequest) (*SectionResponse, error)
 	mustEmbedUnimplementedSectionServiceServer()
 }
 
@@ -96,6 +122,12 @@ func (UnimplementedSectionServiceServer) UpdateSection(context.Context, *UpdateS
 }
 func (UnimplementedSectionServiceServer) DeleteSection(context.Context, *DeleteSectionRequest) (*DeleteSectionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteSection not implemented")
+}
+func (UnimplementedSectionServiceServer) ListSections(context.Context, *Empty) (*SectionListResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSections not implemented")
+}
+func (UnimplementedSectionServiceServer) GetSection(context.Context, *GetSectionRequest) (*SectionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSection not implemented")
 }
 func (UnimplementedSectionServiceServer) mustEmbedUnimplementedSectionServiceServer() {}
 func (UnimplementedSectionServiceServer) testEmbeddedByValue()                        {}
@@ -172,6 +204,42 @@ func _SectionService_DeleteSection_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SectionService_ListSections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SectionServiceServer).ListSections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SectionService_ListSections_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SectionServiceServer).ListSections(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SectionService_GetSection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SectionServiceServer).GetSection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SectionService_GetSection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SectionServiceServer).GetSection(ctx, req.(*GetSectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SectionService_ServiceDesc is the grpc.ServiceDesc for SectionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +258,14 @@ var SectionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSection",
 			Handler:    _SectionService_DeleteSection_Handler,
+		},
+		{
+			MethodName: "ListSections",
+			Handler:    _SectionService_ListSections_Handler,
+		},
+		{
+			MethodName: "GetSection",
+			Handler:    _SectionService_GetSection_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
