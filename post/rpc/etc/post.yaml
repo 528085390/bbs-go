@@ -1,0 +1,32 @@
+Name: post.rpc
+ListenOn: 0.0.0.0:8005
+
+Mode: dev
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: post.rpc
+
+RabbitMQ:
+  Host: "127.0.0.1"
+  Port: 5672
+  User: "guest"
+  Password: "guest"
+  VHost: "/"
+  ExchangeName: "post.exchange"
+  QueueName: "post.queue"
+  RoutingKey: "post.view"
+
+
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
+SectionRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: section.rpc
