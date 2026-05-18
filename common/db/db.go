@@ -32,6 +32,7 @@ func createTable(db *gorm.DB) {
 	err = db.AutoMigrate(models.User{})
 	err = db.AutoMigrate(models.Section{})
 	err = db.AutoMigrate(models.Post{})
+	err = db.AutoMigrate(models.Comment{})
 	if err != nil {
 		log.Fatalf("failed to create tables: " + err.Error())
 	}

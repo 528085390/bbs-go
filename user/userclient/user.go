@@ -14,7 +14,9 @@ import (
 )
 
 type (
+	ExistsResp         = user.ExistsResp
 	GetUserInfoRequest = user.GetUserInfoRequest
+	IdRequest          = user.IdRequest
 	Request            = user.Request
 	Response           = user.Response
 	UserInfoResponse   = user.UserInfoResponse
@@ -23,6 +25,7 @@ type (
 		Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 		GetUserInfoBy(ctx context.Context, in *GetUserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 		UpdateUserInfo(ctx context.Context, in *GetUserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
+		ExistsUser(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*ExistsResp, error)
 	}
 
 	defaultUser struct {
@@ -49,4 +52,9 @@ func (m *defaultUser) GetUserInfoBy(ctx context.Context, in *GetUserInfoRequest,
 func (m *defaultUser) UpdateUserInfo(ctx context.Context, in *GetUserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.UpdateUserInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) ExistsUser(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*ExistsResp, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.ExistsUser(ctx, in, opts...)
 }

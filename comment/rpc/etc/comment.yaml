@@ -1,0 +1,20 @@
+Name: comment.rpc
+ListenOn: 0.0.0.0:8002
+Mode: dev
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: comment.rpc
+
+
+PostRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    key: post.rpc
+
+UserRpc:
+    Etcd:
+      Hosts:
+        - 127.0.0.1:2379
+      key: user.rpc

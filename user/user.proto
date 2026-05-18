@@ -15,6 +15,7 @@ service User {
   rpc Ping(Request) returns(Response);
   rpc GetUserInfoBy(GetUserInfoRequest) returns(UserInfoResponse);
   rpc UpdateUserInfo(GetUserInfoRequest) returns(UserInfoResponse);
+  rpc ExistsUser(IdRequest) returns(ExistsResp);
 }
 
 message GetUserInfoRequest {
@@ -33,6 +34,14 @@ message UserInfoResponse {
   string UpdatedAt = 5;
   string CreatedAt = 6;
   repeated string  Roles = 7;
+}
+
+message IdRequest {
+  int64 Id = 1;
+}
+
+message ExistsResp{
+  bool data = 1;
 }
 // goctl rpc protoc user.proto --go_out=.  --go-grpc_out=.  --zrpc_out=.
 // goctl rpc protoc user.proto --go_out=./user --go-grpc_out=./user --zrpc_out=.

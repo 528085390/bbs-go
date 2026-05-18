@@ -26,8 +26,7 @@ func NewExistsPostLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Exists
 
 func (l *ExistsPostLogic) ExistsPost(in *post.IdPathReq) (*post.ExistsResp, error) {
 	postId := in.Id
-	var postRes models.Post
-	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
+	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&models.Post{})
 	if res.Error != nil {
 		return &post.ExistsResp{
 			Data: false,

@@ -37,3 +37,8 @@ func (s *UserServer) UpdateUserInfo(ctx context.Context, in *user.GetUserInfoReq
 	l := logic.NewUpdateUserInfoLogic(ctx, s.svcCtx)
 	return l.UpdateUserInfo(in)
 }
+
+func (s *UserServer) ExistsUser(ctx context.Context, in *user.IdRequest) (*user.ExistsResp, error) {
+	l := logic.NewExistsUserLogic(ctx, s.svcCtx)
+	return l.ExistsUser(in)
+}

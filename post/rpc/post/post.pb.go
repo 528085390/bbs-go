@@ -396,7 +396,7 @@ func (x *UpdatePostReq) GetContent() string {
 type ToggleReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Value         bool                   `protobuf:"varint,2,opt,name=value,proto3" json:"value"`
+	Value         bool                   `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

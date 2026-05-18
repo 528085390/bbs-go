@@ -13,13 +13,13 @@ JwtSecret: this is a secret
 Upstreams:
   # User RPC 服务
   - Grpc:
-      # 生产/联调用：etcd 服务发现
-#      Etcd:
-#        Hosts:
-#          - localhost:2379
-#        Key: user.rpc
+      #       生产/联调用：etcd 服务发现
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: user.rpc
       # 本地直连（启用时请注释掉上面的 Etcd）
-       Target: localhost:8004
+    #       Target: localhost:8004
     Mappings:
       - Method: get
         Path: /api/user/ping
@@ -66,12 +66,12 @@ Upstreams:
   # Post RPC 服务
   - Grpc:
       # 生产/联调用：etcd 服务发现
-#      Etcd:
-#        Hosts:
-#          - localhost:2379
-#        Key: post.rpc
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: post.rpc
       # 本地直连（启用时请注释掉上面的 Etcd）
-       Target: localhost:8005
+    #       Target: localhost:8005
     Mappings:
       - Method: post
         Path: /api/posts
@@ -104,3 +104,23 @@ Upstreams:
       - Method: get
         Path: /api/posts/:id/meta
         RpcPath: post.PostService/MetaPost
+  # Comment RPC 服务
+  - Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: comment.rpc
+      # Target: localhost:8006
+    Mappings:
+      - Method: post
+        Path: /api/comments
+        RpcPath: comment.CommentService/CreateComment
+
+      - Method: get
+        Path: /api/comments
+        RpcPath: comment.CommentService/ListComments
+
+      - Method: delete
+        Path: /api/comments/:id
+        RpcPath: comment.CommentService/DeleteComment
+
