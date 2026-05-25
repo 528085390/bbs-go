@@ -1,0 +1,333 @@
+version: "3.8"
+
+name: bbs-go
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-common-env: &common-env
+  ETCD_HOSTS: etcd:2379
+
+x-db-env: &db-env
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_PASSWORD: ${DB_PASSWORD:-123456}
+  DB_NAME: bbs-go
+
+networks:
+  bbs-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  etcddata:
+
+services:
+  # ============================================================
+  # Infrastructure
+  # ============================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: bbs-postgres
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
+      POSTGRES_DB: bbs-go
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging: *default-logging
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.15
+    container_name: bbs-etcd
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    environment:
+      ETCD_NAME: bbs-etcd
+      ETCD_DATA_DIR: /etcd-data
+      ETCD_ADVERTISE_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd:2380
+      ETCD_INITIAL_CLUSTER: bbs-etcd=http://etcd:2380
+      ETCD_INITIAL_CLUSTER_STATE: new
+    volumes:
+      - etcddata:/etcd-data
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    logging: *default-logging
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: bbs-rabbitmq
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${MQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${MQ_PASSWORD:-guest}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+  # ============================================================
+  # RPC Services
+  # ============================================================
+  user:
+    image: temp-user:latest
+    container_name: bbs-user
+    build:
+      context: .
+      args:
+        SERVICE: user
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8004:8004"
+    environment:
+      <<: [*common-env, *db-env]
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    logging: *default-logging
+
+  auth:
+    image: temp-auth:latest
+    container_name: bbs-auth
+    build:
+      context: .
+      args:
+        SERVICE: auth
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8001:8001"
+    environment:
+      <<: [*common-env, *db-env]
+      JWT_SECRET: ${JWT_SECRET:-this-is-a-secret}
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      user:
+        condition: service_started
+    logging: *default-logging
+
+  section:
+    image: temp-section:latest
+    container_name: bbs-section
+    build:
+      context: .
+      args:
+        SERVICE: section/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8003:8003"
+    environment:
+      <<: [*common-env, *db-env]
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    logging: *default-logging
+
+  post:
+    image: temp-post:latest
+    container_name: bbs-post
+    build:
+      context: .
+      args:
+        SERVICE: post/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8005:8005"
+    environment:
+      <<: [*common-env, *db-env]
+      MQ_HOST: rabbitmq
+      MQ_PORT: 5672
+      MQ_USER: ${MQ_USER:-guest}
+      MQ_PASSWORD: ${MQ_PASSWORD:-guest}
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      user:
+        condition: service_started
+      section:
+        condition: service_started
+    logging: *default-logging
+
+  interaction:
+    image: temp-interaction:latest
+    container_name: bbs-interaction
+    build:
+      context: .
+      args:
+        SERVICE: interaction/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8006:8006"
+    environment:
+      <<: [*common-env, *db-env]
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      user:
+        condition: service_started
+      post:
+        condition: service_started
+    logging: *default-logging
+
+  comment:
+    image: temp-comment:latest
+    container_name: bbs-comment
+    build:
+      context: .
+      args:
+        SERVICE: comment/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8002:8002"
+    environment:
+      <<: [*common-env, *db-env]
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      post:
+        condition: service_started
+      user:
+        condition: service_started
+    logging: *default-logging
+
+  search:
+    image: temp-search:latest
+    container_name: bbs-search
+    build:
+      context: .
+      args:
+        SERVICE: search/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8007:8007"
+    environment:
+      <<: [*common-env]
+    depends_on:
+      etcd:
+        condition: service_healthy
+      post:
+        condition: service_started
+    logging: *default-logging
+
+  file:
+    image: temp-file:latest
+    container_name: bbs-file
+    build:
+      context: .
+      args:
+        SERVICE: file/rpc
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8010:8010"
+    environment:
+      <<: [*common-env, *db-env]
+      OSS_ENDPOINT: ${OSS_ENDPOINT}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET}
+      OSS_BUCKET_NAME: ${OSS_BUCKET_NAME}
+      OSS_BASE_URL: ${OSS_BASE_URL}
+    depends_on:
+      etcd:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    logging: *default-logging
+
+  # ============================================================
+  # API Gateway (Entry Point)
+  # ============================================================
+  gateway:
+    image: temp-gateway:latest
+    container_name: bbs-gateway
+    build:
+      context: .
+      args:
+        SERVICE: gateway
+    restart: unless-stopped
+    networks:
+      - bbs-net
+    ports:
+      - "8888:8888"
+    environment:
+      <<: [*common-env]
+      JWT_SECRET: ${JWT_SECRET:-this-is-a-secret}
+    depends_on:
+      etcd:
+        condition: service_healthy
+      user:
+        condition: service_started
+      auth:
+        condition: service_started
+      section:
+        condition: service_started
+      post:
+        condition: service_started
+      interaction:
+        condition: service_started
+      comment:
+        condition: service_started
+      search:
+        condition: service_started
+      file:
+        condition: service_started
+    logging: *default-logging

@@ -7,6 +7,7 @@ RUN apk add --no-cache tzdata
 WORKDIR /src
 
 COPY go.mod go.sum ./
+RUN go env -w GOPROXY=https://goproxy.cn,direct
 RUN go mod download -x
 
 COPY . .
