@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 
 	"temp/user/internal/svc"
@@ -31,11 +33,11 @@ func (l *GetUserInfoByLogic) GetUserInfoBy(in *user.GetUserInfoRequest) (*user.U
 	// 参数校验 TODO err
 	if arg == "" {
 		logx.Error("GetUserInfoBy arg is empty")
-		return nil, nil
+		return nil, errs.New(errorcode.ParamError, "arg is empty")
 	}
 	if arg != "email" && arg != "username" && arg != "id" {
 		logx.Error("GetUserInfoBy arg is not email or username or id")
-		return nil, nil
+		return nil, errs.New(errorcode.ParamError, "arg is not email or username or id")
 	}
 
 	var res *gorm.DB
@@ -49,7 +51,7 @@ func (l *GetUserInfoByLogic) GetUserInfoBy(in *user.GetUserInfoRequest) (*user.U
 	}
 	if res != nil && res.Error != nil {
 		logx.Errorf("GetUserInfoBy in database err: %v", res.Error)
-		return nil, res.Error
+		return nil, errs.Wrap(res.Error)
 	}
 
 	return &user.UserInfoResponse{

@@ -2,7 +2,8 @@ package logic
 
 import (
 	"context"
-	"errors"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/common/valid"
@@ -40,10 +41,12 @@ func (l *UpdatePostLogic) UpdatePost(in *post.UpdatePostReq) (*post.PostResp, er
 	err = valid.IsValidInt(postId, int64(sectionId), authorId)
 	userId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
+		logx.Errorf("get user id failed: %v", err)
 		return nil, err
 	}
 	_, err = l.svcCtx.SectionRpc.GetSection(l.ctx, &sectionservice.GetSectionRequest{Id: sectionId})
 	if err != nil {
+		logx.Errorf("get section failed: %v", err)
 		return nil, err
 	}
 
@@ -51,12 +54,14 @@ func (l *UpdatePostLogic) UpdatePost(in *post.UpdatePostReq) (*post.PostResp, er
 	var PostRes models.Post
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&PostRes)
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("get post failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.NotFound, res.Error, "帖子不存在")
 	}
 
 	// 权限校验
 	if PostRes.AuthorID != userId {
-		return nil, errors.New("无权限修改该文章")
+		logx.Errorf("update post forbidden: user=%d post=%d", userId, postId)
+		return nil, errs.New(errorcode.Forbidden, "无权限修改该文章")
 	}
 
 	// 更新文章
@@ -66,8 +71,11 @@ func (l *UpdatePostLogic) UpdatePost(in *post.UpdatePostReq) (*post.PostResp, er
 		SectionID: int(sectionId),
 	})
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("update post failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "更新文章失败")
 	}
+
+	logx.Infof("update post success: id=%d", postId)
 
 	// 返回结果
 	return &post.PostResp{

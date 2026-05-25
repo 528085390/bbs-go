@@ -1,0 +1,7 @@
+.git/
+.gitignore
+.idea/
+.claude/
+*.md
+*.exe
+*.log

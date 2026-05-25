@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
+	"temp/common/errs"
 	"temp/post/rpc/internal/config"
 	"temp/post/rpc/internal/server"
 	"temp/post/rpc/internal/svc"
 	"temp/post/rpc/post"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -23,6 +24,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	c.LoadFromEnv()
 	ctx := svc.NewServiceContext(c)
 
 	go svc.StartConsumer(ctx)
@@ -34,8 +36,9 @@ func main() {
 			reflection.Register(grpcServer)
 		}
 	})
+	s.AddUnaryInterceptors(errs.UnaryServerInterceptor())
 	defer s.Stop()
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	logx.Infof("Starting rpc server at %s...", c.ListenOn)
 	s.Start()
 }

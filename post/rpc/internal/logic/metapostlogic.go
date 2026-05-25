@@ -30,6 +30,7 @@ func (l *MetaPostLogic) MetaPost(in *post.IdPathReq) (*post.PostMetaResp, error)
 	postId := in.Id
 	err := valid.IsValidInt(postId)
 	if err != nil {
+		logx.Errorf("meta post invalid params: %v", err)
 		return nil, err
 	}
 
@@ -37,8 +38,11 @@ func (l *MetaPostLogic) MetaPost(in *post.IdPathReq) (*post.PostMetaResp, error)
 	var postRes models.Post
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
 	if res.Error != nil {
+		logx.Errorf("meta post query failed: %v", res.Error)
 		return nil, res.Error
 	}
+
+	logx.Infof("meta post success: id=%d", postId)
 
 	// 返回
 	return &post.PostMetaResp{

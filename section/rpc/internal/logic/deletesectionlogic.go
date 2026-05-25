@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"log"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/section/rpc/internal/svc"
@@ -36,23 +35,23 @@ func (l *DeleteSectionLogic) DeleteSection(in *rpc.DeleteSectionRequest) (*rpc.D
 	if err != nil {
 		return nil, err
 	}
-	log.Println("userId: ", userId)
-	log.Println("rolesSlice: ", rolesSlice)
+	logx.Infof("userId: %d", userId)
+	logx.Infof("rolesSlice: %v", rolesSlice)
 
 	// 判断权限
 	if !slices.Contains(rolesSlice, "admin") {
-		return nil, errors.New("无权限")
+		return nil, errs.New(errorcode.Forbidden, "无权限")
 	}
 
 	// 删除板块
 	res := l.svcCtx.Db.Where("id = ?", in.Id).Delete(&models.Section{})
 	if res.RowsAffected == 0 {
-		return nil, errors.New("板块不存在")
+		return nil, errs.New(errorcode.NotFound, "板块不存在")
 	}
 	if res.Error != nil {
-		return nil, res.Error
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "删除板块失败")
 	}
-	log.Printf(fmt.Sprintf("	管理员 %d 删除板块 %d 成功", userId, in.Id))
+	logx.Infof("管理员 %d 删除板块 %d 成功", userId, in.Id)
 
 	return &rpc.DeleteSectionResponse{
 		Success: true,

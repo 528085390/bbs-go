@@ -1,9 +1,8 @@
 package mq
 
 import (
-	"log"
-
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type RabbitMQ struct {
@@ -64,23 +63,23 @@ func InitRabbitMQ(amqpUrl, exchangeName, queueName, routingKey string) (*amqp.Ch
 		return nil, err
 	}
 
-	log.Printf("RabbitMQ initialized. Exchange: %s, Queue: %s, RoutingKey: %s",
+	logx.Infof("RabbitMQ initialized. Exchange: %s, Queue: %s, RoutingKey: %s",
 		exchangeName, queueName, routingKey)
 
 	return ch, nil
 }
 
-func GetRabbitMQ(c RabbitMQConf) RabbitMQ {
+func GetRabbitMQ(c RabbitMQConf) (RabbitMQ, error) {
 	amqpUrl := c.GetAMQPUrl()
 	ch, err := InitRabbitMQ(amqpUrl, c.ExchangeName,
 		c.QueueName, c.RoutingKey)
 	if err != nil {
-		panic(err)
+		return RabbitMQ{}, err
 	}
 	return RabbitMQ{
 		MQChannel:    ch,
 		ExchangeName: c.ExchangeName,
 		QueueName:    c.QueueName,
 		RoutingKey:   c.RoutingKey,
-	}
+	}, nil
 }

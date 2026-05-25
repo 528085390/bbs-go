@@ -2,7 +2,8 @@ package logic
 
 import (
 	"context"
-	"errors"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 
 	"temp/section/rpc/internal/svc"
@@ -30,7 +31,8 @@ func (l *ListSectionsLogic) ListSections(in *rpc.Empty) (*rpc.SectionListRespons
 	var sectionList []models.Section
 	res := l.svcCtx.Db.Model(&models.Section{}).Find(&sectionList)
 	if res.Error != nil {
-		return nil, errors.New("查询板块列表失败")
+		logx.Errorf("list sections failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "查询板块列表失败")
 	}
 
 	// 封装返回结果
@@ -51,6 +53,7 @@ func (l *ListSectionsLogic) ListSections(in *rpc.Empty) (*rpc.SectionListRespons
 	}
 
 	// 返回结果
+	logx.Infof("list sections success: total=%d", len(sectionListResp))
 	return &rpc.SectionListResponse{
 		List:  sectionListResp,
 		Total: int64(len(sectionListResp)),

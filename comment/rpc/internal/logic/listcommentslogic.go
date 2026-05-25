@@ -30,6 +30,7 @@ func (l *ListCommentsLogic) ListComments(in *comment.ListCommentsReq) (*comment.
 	postId := in.PostId
 	err := valid.IsValidInt(postId)
 	if err != nil {
+		logx.Errorf("list comments invalid params: %v", err)
 		return nil, err
 	}
 
@@ -41,6 +42,7 @@ func (l *ListCommentsLogic) ListComments(in *comment.ListCommentsReq) (*comment.
 		Find(&comments)
 
 	if res.Error != nil {
+		logx.Errorf("list comments query failed: %v", res.Error)
 		return nil, res.Error
 	}
 
@@ -68,6 +70,7 @@ func (l *ListCommentsLogic) ListComments(in *comment.ListCommentsReq) (*comment.
 	//	}
 	//
 	//})
+	logx.Infof("list comments success: post=%d total=%d", postId, len(commentsResp))
 	return &comment.ListCommentsResp{
 		Comments: commentsResp,
 		Total:    uint64(len(commentsResp)),

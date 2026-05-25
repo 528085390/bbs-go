@@ -28,11 +28,13 @@ func (l *ExistsPostLogic) ExistsPost(in *post.IdPathReq) (*post.ExistsResp, erro
 	postId := in.Id
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&models.Post{})
 	if res.Error != nil {
+		logx.Errorf("exists post check failed: %v", res.Error)
 		return &post.ExistsResp{
 			Data: false,
 		}, nil
 	}
 
+	logx.Infof("exists post success: id=%d", postId)
 	return &post.ExistsResp{
 		Data: true,
 	}, nil

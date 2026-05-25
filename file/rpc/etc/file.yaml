@@ -1,0 +1,15 @@
+Name: file.rpc
+ListenOn: 0.0.0.0:8010
+Mode: dev
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: file.rpc
+
+# OSS 配置（以阿里云为例，实际使用时替换为你的配置）
+OSS:
+  Endpoint: oss-cn-guangzhou.aliyuncs.com
+  BucketName: li-bbs-go
+  BaseURL: https://your-bucket.oss-cn-guangzhou.aliyuncs.com
+  UploadTimeout: 15m  # 上传凭证有效期

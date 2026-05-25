@@ -1,39 +1,52 @@
 package db
 
 import (
+	"fmt"
 	"log"
+	"temp/common/db/config"
 	"temp/common/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-// GetDB 获取全局数据库实例（单例模式）
-func GetDB() *gorm.DB {
+var dbConfig config.DatabaseConfig
 
-	dsn := "host=localhost user=postgres password=123456 dbname=bbs-go port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	log.Printf("Connecting to database with DSN: %s", dsn)
+func init() {
+	dbConfig.SetDefaults()
+	dbConfig.LoadFromEnv()
+}
+
+func GetDB() *gorm.DB {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		dbConfig.Host, dbConfig.User, dbConfig.Password, dbConfig.Dbname, dbConfig.Port)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf(" failed to connect database: %v", err)
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	log.Println("✅ Database connected successfully")
-
-	createTable(db)
-	log.Println("✅ Database migration completed")
+	log.Println("Database connected successfully")
 
 	return db
 }
 
-func createTable(db *gorm.DB) {
-	var err error
-	err = db.AutoMigrate(models.User{})
-	err = db.AutoMigrate(models.Section{})
-	err = db.AutoMigrate(models.Post{})
-	err = db.AutoMigrate(models.Comment{})
+func CreateTable(db *gorm.DB) {
+	err := db.AutoMigrate(
+		&models.User{},
+		&models.Post{},
+		&models.Favorite{},
+		&models.Like{},
+		&models.Section{},
+		&models.Follow{},
+		&models.Comment{},
+		&models.File{},
+	)
 	if err != nil {
-		log.Fatalf("failed to create tables: " + err.Error())
+		log.Fatalf("failed to create tables: %v", err)
 	}
+}
+
+func Init() {
+	CreateTable(GetDB())
 }

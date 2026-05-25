@@ -1,34 +1,42 @@
-// Code scaffolded by goctl. Safe to edit.
-// goctl 1.10.1
-
 package main
 
 import (
 	"flag"
 	"fmt"
 
-	"temp/auth-api/internal/config"
-	"temp/auth-api/internal/handler"
-	"temp/auth-api/internal/svc"
+	"temp/auth/auth"
+	"temp/auth/internal/config"
+	"temp/auth/internal/server"
+	"temp/auth/internal/svc"
+	"temp/common/errs"
 
 	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/rest"
+	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/zrpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-var configFile = flag.String("f", "etc/auth-api.yaml", "the config file")
+var configFile = flag.String("f", "etc/auth.yaml", "the config file")
 
 func main() {
 	flag.Parse()
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
-
-	server := rest.MustNewServer(c.RestConf)
-	defer server.Stop()
-
+	c.LoadFromEnv()
 	ctx := svc.NewServiceContext(c)
-	handler.RegisterHandlers(server, ctx)
 
-	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
-	server.Start()
+	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
+		auth.RegisterAuthServer(grpcServer, server.NewAuthServer(ctx))
+
+		if c.Mode == service.DevMode || c.Mode == service.TestMode {
+			reflection.Register(grpcServer)
+		}
+	})
+	s.AddUnaryInterceptors(errs.UnaryServerInterceptor())
+	defer s.Stop()
+
+	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	s.Start()
 }

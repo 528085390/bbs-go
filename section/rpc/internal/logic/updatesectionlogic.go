@@ -2,13 +2,14 @@ package logic
 
 import (
 	"context"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/section/rpc/internal/svc"
 	"temp/section/rpc/section/rpc"
 
 	"temp/common/models"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"k8s.io/kube-openapi/pkg/validation/errors"
 )
 
 type UpdateSectionLogic struct {
@@ -34,7 +35,8 @@ func (l *UpdateSectionLogic) UpdateSection(in *rpc.UpdateSectionRequest) (*rpc.U
 
 	// 参数校验
 	if title == "" || description == "" || orderIndex < 0 || id < 0 {
-		return nil, errors.New(400, "参数错误", nil)
+		logx.Error("update section invalid params")
+		return nil, errs.New(errorcode.BadRequest, "参数错误")
 	}
 
 	//封装新板块
@@ -47,12 +49,15 @@ func (l *UpdateSectionLogic) UpdateSection(in *rpc.UpdateSectionRequest) (*rpc.U
 
 	res := l.svcCtx.Db.Model(&models.Section{}).Where("id = ?", id).Select("title", "description", "order_index", "visibility").Updates(&newSection)
 	if res.Error != nil {
-		return nil, errors.New(500, "板块更新错误", res.Error)
+		logx.Errorf("update section failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "板块更新错误")
 	}
 	if res.RowsAffected == 0 {
-		return nil, errors.New(500, "板块不存在", nil)
+		logx.Errorf("update section not found: id=%d", id)
+		return nil, errs.New(errorcode.NotFound, "板块不存在")
 	}
 
+	logx.Infof("update section success: id=%d", id)
 	return &rpc.UpdateSectionResponse{
 		Section: &rpc.SectionResponse{
 			Id:          in.Id,

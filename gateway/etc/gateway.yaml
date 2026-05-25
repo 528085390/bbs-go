@@ -4,12 +4,47 @@ Port: 8888
 
 JwtSecret: this is a secret
 
-#Etcd:
-#  Hosts:
-#    - 127.0.0.1:2379
-#  Key: gateway
+PublicRoutes:
+  # Auth
+  - Method: post
+    Path: /api/auth/login
+  - Method: post
+    Path: /api/auth/register
+  - Method: get
+    Path: /api/health
 
-# 上游服务配置
+  # Section
+  - Method: get
+    Path: /api/sections
+  - Method: get
+    Path: /api/sections/:id
+
+  # Post
+  - Method: get
+    Path: /api/posts
+  - Method: get
+    Path: /api/posts/:id
+  - Method: get
+    Path: /api/posts/:postId/favorites/count
+  - Method: get
+    Path: /api/posts/:postId/images
+
+  # Comment
+  - Method: get
+    Path: /api/posts/:postId/comments
+  - Method: get
+    Path: /api/posts/:postId/comments/count
+
+  # Search
+  - Method: get
+    Path: /api/posts/search
+
+  # File
+  - Method: get
+    Path: /api/files/:id
+  - Method: get
+    Path: /api/users/:userId/avatar
+
 Upstreams:
   # User RPC 服务
   - Grpc:
@@ -22,16 +57,31 @@ Upstreams:
     #       Target: localhost:8004
     Mappings:
       - Method: get
-        Path: /api/user/ping
+        Path: /api/health
         RpcPath: user.User/Ping
 
-      - Method: post
-        Path: /api/user/id
+      - Method: get
+        Path: /api/users/:id
         RpcPath: user.User/GetUserInfoBy
 
       - Method: put
-        Path: /api/user/id
+        Path: /api/users/:id
         RpcPath: user.User/UpdateUserInfo
+
+  # Auth RPC 服务
+  - Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: auth.rpc
+    Mappings:
+      - Method: post
+        Path: /api/auth/login
+        RpcPath: auth.Auth/Login
+
+      - Method: post
+        Path: /api/auth/register
+        RpcPath: auth.Auth/Register
 
   # Section RPC 服务
   - Grpc:
@@ -89,21 +139,14 @@ Upstreams:
         Path: /api/posts/:id
         RpcPath: post.PostService/DeletePost
 
-      - Method: post
+      - Method: patch
         Path: /api/posts/:id/pin
         RpcPath: post.PostService/PinPost
 
-      - Method: post
+      - Method: patch
         Path: /api/posts/:id/feature
         RpcPath: post.PostService/FeaturePost
 
-      - Method: get
-        Path: /api/posts/:id/exists
-        RpcPath: post.PostService/ExistsPost
-
-      - Method: get
-        Path: /api/posts/:id/meta
-        RpcPath: post.PostService/MetaPost
   # Comment RPC 服务
   - Grpc:
       Etcd:
@@ -113,14 +156,108 @@ Upstreams:
       # Target: localhost:8006
     Mappings:
       - Method: post
-        Path: /api/comments
+        Path: /api/posts/:postId/comments
         RpcPath: comment.CommentService/CreateComment
 
       - Method: get
-        Path: /api/comments
+        Path: /api/posts/:postId/comments
         RpcPath: comment.CommentService/ListComments
 
+      - Method: get
+        Path: /api/posts/:postId/comments/count
+        RpcPath: comment.CommentService/GetCommentCount
+
       - Method: delete
-        Path: /api/comments/:id
+        Path: /api/posts/:postId/comments/:id
         RpcPath: comment.CommentService/DeleteComment
 
+
+  # Interaction RPC 服务
+  - Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: interaction.rpc
+      # Target: localhost:8007
+    Mappings:
+      - Method: post
+        Path: /api/posts/:postId/likes
+        RpcPath: interaction.Interaction/Like
+
+      - Method: post
+        Path: /api/posts/:postId/favorites
+        RpcPath: interaction.Interaction/Favorite
+
+      - Method: post
+        Path: /api/users/:userId/following
+        RpcPath: interaction.Interaction/Follow
+
+      - Method: get
+        Path: /api/users/:userId/following
+        RpcPath: interaction.Interaction/GetMyFollowing
+
+      - Method: get
+        Path: /api/users/:userId/favorites
+        RpcPath: interaction.Interaction/GetMyFavourites
+
+      - Method: get
+        Path: /api/posts/:postId/favorites/count
+        RpcPath: interaction.Interaction/GetPostFavoritesCount
+
+  - Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: search.rpc
+    Mappings:
+      - Method: get
+        Path: /api/posts/search
+        RpcPath: search.SearchService/Search
+
+  # File RPC 服务
+  - Grpc:
+      Etcd:
+        Hosts:
+          - localhost:2379
+        Key: file.rpc
+    Mappings:
+      # 生成上传凭证（需要鉴权）
+      - Method: post
+        Path: /api/files/uploads
+        RpcPath: file.FileService/GetUploadURL
+
+      # 确认上传完成（需要鉴权）
+      - Method: post
+        Path: /api/files
+        RpcPath: file.FileService/ConfirmUpload
+
+      # 获取文件信息（公开访问）
+      - Method: get
+        Path: /api/files/:id
+        RpcPath: file.FileService/GetFile
+
+      # 头像上传
+      - Method: post
+        Path: /api/users/:userId/avatar/uploads
+        RpcPath: file.FileService/GetAvatarUploadURL
+
+      - Method: post
+        Path: /api/users/:userId/avatar
+        RpcPath: file.FileService/ConfirmAvatarUpload
+
+      - Method: get
+        Path: /api/users/:userId/avatar
+        RpcPath: file.FileService/GetAvatar
+
+      # 帖子图片上传
+      - Method: post
+        Path: /api/posts/:postId/images/uploads
+        RpcPath: file.FileService/GetPostImageUploadURL
+
+      - Method: post
+        Path: /api/posts/:postId/images
+        RpcPath: file.FileService/ConfirmPostImageUpload
+
+      - Method: get
+        Path: /api/posts/:postId/images
+        RpcPath: file.FileService/GetPostImages

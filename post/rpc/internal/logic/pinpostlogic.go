@@ -2,9 +2,10 @@ package logic
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/httpctx"
 	"temp/common/models"
 
@@ -35,28 +36,35 @@ func (l *PinPostLogic) PinPost(in *post.ToggleReq) (*post.CommonResp, error) {
 	val := in.Value
 	userId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
+		logx.Errorf("get user id failed: %v", err)
 		return nil, err
 	}
 	roles, err := httpctx.GetRoles(l.ctx)
 	if err != nil {
+		logx.Errorf("get roles failed: %v", err)
 		return nil, err
 	}
 
 	// 权限校验
 	if !slices.Contains(roles, "admin") {
-		return nil, errors.New(fmt.Sprintf("用户 %d 无权限帖子 %d", userId, postId))
+		logx.Errorf("pin post forbidden: user=%d post=%d", userId, postId)
+		return nil, errs.New(errorcode.Forbidden, fmt.Sprintf("用户 %d 无权限帖子 %d", userId, postId))
 	}
 
 	// 置顶帖子
 	var postRes models.Post
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes, postId)
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("get post failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "获取帖子失败")
 	}
 	res = l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).Update("pinned", val)
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("update pinned failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "更新置顶失败")
 	}
+
+	logx.Infof("pin post success: id=%d value=%t", postId, val)
 
 	// 返回
 	return &post.CommonResp{

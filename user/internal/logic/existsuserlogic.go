@@ -29,11 +29,13 @@ func (l *ExistsUserLogic) ExistsUser(in *user.IdRequest) (*user.ExistsResp, erro
 	// 查询数据库
 	res := l.svcCtx.Db.Model(&models.User{}).Where("id = ?", userId).First(&models.User{})
 	if res.Error != nil {
+		logx.Errorf("exists user check failed: %v", res.Error)
 		return &user.ExistsResp{
 			Data: false,
 		}, nil
 	}
 
+	logx.Infof("exists user success: id=%d", userId)
 	// 用户存在
 	return &user.ExistsResp{
 		Data: true,

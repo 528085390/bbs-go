@@ -1,84 +1,76 @@
-// Code scaffolded by goctl. Safe to edit.
-// goctl 1.10.1
-
 package logic
 
 import (
 	"context"
-	"errors"
-	"temp/common/auth"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
+	"temp/common/tokenUtil"
 	"temp/user/userclient"
 
-	"temp/auth-api/internal/svc"
-	"temp/auth-api/internal/types"
+	"temp/auth/auth"
+	"temp/auth/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type RegisterLogic struct {
-	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
+	logx.Logger
 }
 
 func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegisterLogic {
 	return &RegisterLogic{
-		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
+		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
-	newUsername := req.Username
-	newEmail := req.Email
+func (l *RegisterLogic) Register(in *auth.RegisterReq) (*auth.RegisterResp, error) {
+	newUsername := in.Username
+	newEmail := in.Email
 
 	// 参数校验
 	if newUsername == "" || newEmail == "" {
-		resp := &types.RegisterResp{
-			Message: "username or email is empty",
-		}
-		return resp, errors.New("username or email is empty")
+		logx.Error("username or email is empty")
+		return nil, errs.New(errorcode.BadRequest, "username or email is empty")
 	}
 
 	// 重复校验
 	var user *userclient.UserInfoResponse = nil
-	user, err = l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
+	user, err := l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
 		Email: newEmail,
 		Arg:   "email",
 	})
+	if err != nil {
+		logx.Errorf("check email exists failed: %v", err)
+	}
 	user, err = l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
 		Username: newUsername,
 		Arg:      "username",
 	})
+	if err != nil {
+		logx.Errorf("check username exists failed: %v", err)
+	}
 	if user != nil {
 		logx.Error("username or email already exists")
-		resp := &types.RegisterResp{
-			Message: "username or email already exists",
-		}
-		return resp, errors.New("username or email already exists")
+		return nil, errs.New(errorcode.ErrUserAlreadyExist, "username or email already exists")
 	}
 
 	// 注册
-	hashPassword, err := auth.HashPassword(req.Password)
+	hashPassword, err := tokenUtil.HashPassword(in.Password)
 	if err != nil {
 		logx.Error("HashPassword error")
-		resp := &types.RegisterResp{
-			Message: "register error",
-		}
-		return resp, errors.New("register error")
+		return nil, errs.Wrap(errorcode.ServerError, err, "register error")
 	}
-	newUser := models.NewUser(
-		req.Username,
-		hashPassword,
-		req.Email,
-	)
-	l.svcCtx.Db.Table("users").Create(&newUser)
-
-	resp = &types.RegisterResp{
-		Message: "register success",
+	newUser := models.NewUser(in.Username, hashPassword, in.Email)
+	if err := l.svcCtx.Db.Table("users").Create(&newUser).Error; err != nil {
+		logx.Errorf("create user failed: %v", err)
+		return nil, errs.Wrap(errorcode.ServerError, err, "register error")
 	}
-	return resp, nil
 
+	logx.Infof("register success: username=%s email=%s", newUsername, newEmail)
+	return &auth.RegisterResp{Message: "register success"}, nil
 }

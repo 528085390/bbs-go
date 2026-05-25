@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"fmt"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 	"time"
 
@@ -31,11 +34,11 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *user.GetUserInfoRequest) (*use
 	res := l.svcCtx.Db.Table("users").Find(&userRes, req.Id)
 	if res.Error != nil {
 		logx.Error("find user in database error")
-		return nil, res.Error
+		return nil, errs.Wrap(res.Error)
 	}
 	if res.RowsAffected == 0 {
 		logx.Error("user not found")
-		return nil, nil
+		return nil, errs.New(errorcode.UserNotFound, fmt.Sprintf("userId: %d", req.Id))
 	}
 
 	// update user
@@ -51,6 +54,12 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *user.GetUserInfoRequest) (*use
 	userRes.UpdatedAt = time.Now()
 
 	res = l.svcCtx.Db.Table("users").Save(&userRes)
+	if res.Error != nil {
+		logx.Errorf("update user failed: %v", res.Error)
+		return nil, errs.Wrap(res.Error)
+	}
+
+	logx.Infof("update user success: id=%d", userRes.ID)
 
 	return &user.UserInfoResponse{
 		Id:          int64(userRes.ID),

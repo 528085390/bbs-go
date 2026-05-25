@@ -33,6 +33,7 @@ func (l *GetPostLogic) GetPost(in *post.IdPathReq) (*post.PostResp, error) {
 	postId := in.Id
 	err := valid.IsValidInt(postId)
 	if err != nil {
+		logx.Errorf("get post invalid params: %v", err)
 		return nil, err
 	}
 
@@ -40,14 +41,17 @@ func (l *GetPostLogic) GetPost(in *post.IdPathReq) (*post.PostResp, error) {
 	var postRes post.PostResp
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
 	if res.Error != nil {
+		logx.Errorf("get post failed: %v", res.Error)
 		return nil, res.Error
 	}
 
 	// 增加文章浏览数
 	err = increasePostView(l, postId)
 	if err != nil {
-		logx.Error("increase post view failed: %v", err)
+		logx.Errorf("increase post view failed: %v", err)
 	}
+
+	logx.Infof("get post success: id=%d", postId)
 
 	// 返回结果
 	return &post.PostResp{
@@ -76,11 +80,17 @@ func increasePostView(l *GetPostLogic, postId int64) error {
 		return err
 	}
 
+	client, ok := l.svcCtx.RabbitMQ.Get()
+	if !ok {
+		logx.Info("RabbitMQ not ready, skip publish")
+		return nil
+	}
+
 	// 发布消息到 RabbitMQ
-	err = l.svcCtx.RabbitMQ.MQChannel.PublishWithContext(
+	err = client.MQChannel.PublishWithContext(
 		l.ctx,
-		l.svcCtx.RabbitMQ.ExchangeName,
-		l.svcCtx.RabbitMQ.RoutingKey,
+		client.ExchangeName,
+		client.RoutingKey,
 		false, // mandatory
 		false, // immediate
 		amqp.Publishing{
@@ -94,6 +104,6 @@ func increasePostView(l *GetPostLogic, postId int64) error {
 		return err
 	}
 
-	logx.Info("published post view event to mq: %v", event)
+	logx.Infof("published post view event to mq: %v", event)
 	return nil
 }

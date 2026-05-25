@@ -2,7 +2,8 @@ package logic
 
 import (
 	"context"
-	"errors"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/common/valid"
@@ -34,34 +35,33 @@ func (l *CreatePostLogic) CreatePost(req *post.PostRequest) (*post.PostResp, err
 	// 参数校验
 	title := req.Title
 	content := req.Content
-	authorId := req.AuthorId
 	sectionId := req.SectionId
-	userId, err := httpctx.GetUserId(l.ctx)
+	authorId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
-		return nil, err
+		logx.Errorf("get user id failed: %v", err)
+		return nil, errs.New(errorcode.Unauthorized, err)
 	}
 	err = valid.IsValidString(title, content)
 	if err != nil {
-		return nil, err
+		logx.Errorf("create post invalid string params: %v", err)
+		return nil, errs.New(errorcode.ParamError, err)
 	}
 	err = valid.IsValidInt(authorId, int64(sectionId))
 	if err != nil {
-		return nil, err
+		logx.Errorf("create post invalid int params: %v", err)
+		return nil, errs.New(errorcode.ParamError, err)
 	}
 	user, err := l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
-		Id:  userId,
+		Id:  authorId,
 		Arg: "id",
 	})
 	if err != nil {
-		return nil, err
+		logx.Errorf("get user info failed: %v", err)
+		return nil, errs.New(errorcode.AuthorError, err)
 	}
 	if user == nil {
-		return nil, errors.New("用户不存在")
-	}
-
-	// 权限校验
-	if userId != authorId {
-		return nil, errors.New("无权限发帖")
+		logx.Errorf("user not found: id=%d", authorId)
+		return nil, errs.New(errorcode.AuthorError, "用户不存在")
 	}
 
 	// 版块校验
@@ -69,7 +69,8 @@ func (l *CreatePostLogic) CreatePost(req *post.PostRequest) (*post.PostResp, err
 		Id: sectionId,
 	})
 	if err != nil {
-		return nil, err
+		logx.Errorf("get section failed: %v", err)
+		return nil, errs.New(errorcode.SectionError, err)
 	}
 
 	// 创建帖子 添加帖子
@@ -84,8 +85,11 @@ func (l *CreatePostLogic) CreatePost(req *post.PostRequest) (*post.PostResp, err
 	}
 	res := l.svcCtx.Db.Model(&models.Post{}).Create(&newPost)
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("create post failed: %v", res.Error)
+		return nil, errs.Wrap(res.Error)
 	}
+
+	logx.Infof("create post success: id=%d author=%d section=%d", newPost.ID, authorId, sectionId)
 
 	// 封装返回数据
 	return &post.PostResp{

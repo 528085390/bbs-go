@@ -2,8 +2,9 @@ package logic
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/common/valid"
@@ -35,6 +36,7 @@ func (l *DeleteCommentLogic) DeleteComment(in *comment.DeleteCommentReq) (*comme
 	id := in.Id
 	err := valid.IsValidInt(id)
 	if err != nil {
+		logx.Errorf("delete comment invalid params: %v", err)
 		return nil, err
 	}
 
@@ -42,27 +44,34 @@ func (l *DeleteCommentLogic) DeleteComment(in *comment.DeleteCommentReq) (*comme
 	var commentRes models.Comment
 	res := l.svcCtx.Db.Model(&models.Comment{}).Where("id = ?", id).First(&commentRes)
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("query comment failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.NotFound, res.Error, "评论不存在")
 	}
 
 	// 鉴权
 	userId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
-		return nil, err
+		logx.Errorf("get user id failed: %v", err)
+		return nil, errs.Wrap(errorcode.Unauthorized, err, "获取用户信息失败")
 	}
 	userRoles, err := httpctx.GetRoles(l.ctx)
 	if err != nil {
-		return nil, err
+		logx.Errorf("get roles failed: %v", err)
+		return nil, errs.Wrap(errorcode.ServerError, err, "获取角色信息失败")
 	}
 	if commentRes.AuthorID != userId || !slices.Contains(userRoles, "admin") {
-		return nil, errors.New(fmt.Sprintf("用户 %d 无权限删除评论 %d", userId, id))
+		logx.Errorf("delete comment forbidden: user=%d comment=%d", userId, id)
+		return nil, errs.New(errorcode.Forbidden, fmt.Sprintf("用户 %d 无权限删除评论 %d", userId, id))
 	}
 
 	// 删除评论
 	res = l.svcCtx.Db.Model(&models.Comment{}).Where("id = ?", id).Update("content", "[该评论已删除]")
 	if res.Error != nil {
-		return nil, res.Error
+		logx.Errorf("delete comment update failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "删除评论失败")
 	}
+
+	logx.Infof("delete comment success: id=%d user=%d", id, userId)
 
 	// 返回
 	return &comment.DeleteCommentResp{

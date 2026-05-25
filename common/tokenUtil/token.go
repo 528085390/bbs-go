@@ -1,4 +1,4 @@
-package auth
+package tokenUtil
 
 import (
 	"errors"
@@ -63,7 +63,7 @@ func ValidateAndParseToken(secret string, tokenString string) (bool, int64, []st
 		}
 	}
 
-	return true, (int64(userId)), roles, nil
+	return true, int64(userId), roles, nil
 }
 
 func HashPassword(password string) (string, error) {

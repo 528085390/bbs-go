@@ -29,8 +29,11 @@ func (l *GetSectionLogic) GetSection(req *rpc.GetSectionRequest) (*rpc.SectionRe
 	var section models.Section
 	res := l.svcCtx.Db.Model(&models.Section{}).Where("id = ?", sectionId).First(&section)
 	if res.Error != nil {
+		logx.Errorf("get section failed: %v", res.Error)
 		return nil, res.Error
 	}
+
+	logx.Infof("get section success: id=%d", section.ID)
 	return &rpc.SectionResponse{
 		Id:          int64(section.ID),
 		Title:       section.Title,

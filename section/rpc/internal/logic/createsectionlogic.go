@@ -2,13 +2,14 @@ package logic
 
 import (
 	"context"
-	"log"
+
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 	"temp/section/rpc/internal/svc"
 	"temp/section/rpc/section/rpc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"k8s.io/kube-openapi/pkg/validation/errors"
 )
 
 type CreateSectionLogic struct {
@@ -31,15 +32,16 @@ func (l *CreateSectionLogic) CreateSection(in *rpc.CreateSectionRequest) (*rpc.C
 	description := in.Description
 	orderIndex := int(in.OrderIndex)
 	visibility := in.Visibility
-	log.Printf("title: %s, description: %s, orderIndex: %d, visibility: %t", title, description, orderIndex, visibility)
+	logx.Infof("title: %s, description: %s, orderIndex: %d, visibility: %t", title, description, orderIndex, visibility)
 	if title == "" || description == "" || orderIndex < 0 {
-		return nil, errors.New(400, "参数错误", nil)
+		return nil, errs.New(errorcode.BadRequest, "参数错误")
 	}
 
 	// 判断板块是否存在
 	res := l.svcCtx.Db.Table("sections").Where("title = ?", title).First(&models.Section{})
 	if res.Error == nil {
-		return nil, errors.New(400, "板块已存在", res.Error)
+		logx.Errorf("section already exists: title=%s", title)
+		return nil, errs.New(errorcode.BadRequest, "板块已存在")
 	}
 
 	// 创建板块
@@ -51,7 +53,8 @@ func (l *CreateSectionLogic) CreateSection(in *rpc.CreateSectionRequest) (*rpc.C
 	}
 	res = l.svcCtx.Db.Table("sections").Create(&newSection)
 	if res.Error != nil {
-		return nil, errors.New(500, "板块创建错误", res.Error)
+		logx.Errorf("create section failed: %v", res.Error)
+		return nil, errs.Wrap(errorcode.ServerError, res.Error, "创建板块失败")
 	}
 
 	// 返回结果
@@ -64,6 +67,7 @@ func (l *CreateSectionLogic) CreateSection(in *rpc.CreateSectionRequest) (*rpc.C
 		CreatedAt:   newSection.CreatedAt.String(),
 		UpdatedAt:   newSection.UpdatedAt.String(),
 	}
+	logx.Infof("create section success: id=%d title=%s", newSection.ID, newSection.Title)
 	return &rpc.CreateSectionResponse{
 		Section: &resp,
 	}, nil

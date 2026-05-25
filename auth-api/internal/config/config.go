@@ -1,15 +1,19 @@
-// Code scaffolded by goctl. Safe to edit.
-// goctl 1.10.1
-
 package config
 
 import (
-	"github.com/zeromicro/go-zero/rest"
+	"temp/common/env"
+
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
 type Config struct {
-	rest.RestConf
+	zrpc.RpcServerConf
 	UserRpc   zrpc.RpcClientConf
 	JwtSecret string
+}
+
+func (c *Config) LoadFromEnv() {
+	env.OverrideRpcServerConf(&c.RpcServerConf)
+	env.OverrideRpcClientConf(&c.UserRpc, "USER_RPC")
+	c.JwtSecret = env.GetEnv("JWT_SECRET", c.JwtSecret)
 }
