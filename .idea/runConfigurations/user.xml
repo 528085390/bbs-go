@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="user" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="temp" />
+    <working_directory value="$PROJECT_DIR$/user" />
+    <kind value="FILE" />
+    <package value="temp" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/user/user.go" />
+    <method v="2" />
+  </configuration>
+</component>

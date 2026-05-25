@@ -40,3 +40,9 @@ func (s *CommentServiceServer) DeleteComment(ctx context.Context, in *comment.De
 	l := logic.NewDeleteCommentLogic(ctx, s.svcCtx)
 	return l.DeleteComment(in)
 }
+
+// 获取帖子评论数
+func (s *CommentServiceServer) GetCommentCount(ctx context.Context, in *comment.GetCommentCountReq) (*comment.GetCommentCountResp, error) {
+	l := logic.NewGetCommentCountLogic(ctx, s.svcCtx)
+	return l.GetCommentCount(in)
+}

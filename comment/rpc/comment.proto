@@ -14,6 +14,9 @@ service CommentService {
 
   // 删除评论
   rpc DeleteComment (DeleteCommentReq) returns (DeleteCommentResp);
+
+  // 获取帖子评论数
+  rpc GetCommentCount (GetCommentCountReq) returns (GetCommentCountResp);
 }
 
 // 创建评论请求
@@ -55,4 +58,14 @@ message DeleteCommentReq {
 // 删除评论响应
 message DeleteCommentResp {
   bool success = 1;
+}
+
+// 获取帖子评论数请求
+message GetCommentCountReq {
+  int64 post_id = 1;      // 帖子ID
+}
+
+// 获取帖子评论数响应
+message GetCommentCountResp {
+  int64 count = 1;
 }

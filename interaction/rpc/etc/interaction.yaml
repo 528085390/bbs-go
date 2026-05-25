@@ -1,0 +1,20 @@
+Name: interaction.rpc
+ListenOn: 0.0.0.0:8006
+Mode: dev
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: interaction.rpc
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
+PostRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: post.rpc

@@ -9,6 +9,8 @@ import (
 
 	"temp/post/rpc/post"
 
+	"temp/common/proto"
+
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
 )
@@ -32,6 +34,7 @@ type (
 		FeaturePost(ctx context.Context, in *ToggleReq, opts ...grpc.CallOption) (*CommonResp, error)
 		ExistsPost(ctx context.Context, in *IdPathReq, opts ...grpc.CallOption) (*ExistsResp, error)
 		MetaPost(ctx context.Context, in *IdPathReq, opts ...grpc.CallOption) (*PostMetaResp, error)
+		Search(ctx context.Context, in *proto.SearchRequest, opts ...grpc.CallOption) (*proto.SearchResponse, error)
 	}
 
 	defaultPostService struct {
@@ -83,4 +86,9 @@ func (m *defaultPostService) ExistsPost(ctx context.Context, in *IdPathReq, opts
 func (m *defaultPostService) MetaPost(ctx context.Context, in *IdPathReq, opts ...grpc.CallOption) (*PostMetaResp, error) {
 	client := post.NewPostServiceClient(m.cli.Conn())
 	return client.MetaPost(ctx, in, opts...)
+}
+
+func (m *defaultPostService) Search(ctx context.Context, in *proto.SearchRequest, opts ...grpc.CallOption) (*proto.SearchResponse, error) {
+	client := post.NewPostServiceClient(m.cli.Conn())
+	return client.Search(ctx, in, opts...)
 }

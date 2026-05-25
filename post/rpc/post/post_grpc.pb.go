@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	common "temp/common/proto"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -27,6 +28,7 @@ const (
 	PostService_FeaturePost_FullMethodName = "/post.PostService/FeaturePost"
 	PostService_ExistsPost_FullMethodName  = "/post.PostService/ExistsPost"
 	PostService_MetaPost_FullMethodName    = "/post.PostService/MetaPost"
+	PostService_Search_FullMethodName      = "/post.PostService/Search"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -41,6 +43,7 @@ type PostServiceClient interface {
 	FeaturePost(ctx context.Context, in *ToggleReq, opts ...grpc.CallOption) (*CommonResp, error)
 	ExistsPost(ctx context.Context, in *IdPathReq, opts ...grpc.CallOption) (*ExistsResp, error)
 	MetaPost(ctx context.Context, in *IdPathReq, opts ...grpc.CallOption) (*PostMetaResp, error)
+	Search(ctx context.Context, in *common.SearchRequest, opts ...grpc.CallOption) (*common.SearchResponse, error)
 }
 
 type postServiceClient struct {
@@ -131,6 +134,16 @@ func (c *postServiceClient) MetaPost(ctx context.Context, in *IdPathReq, opts ..
 	return out, nil
 }
 
+func (c *postServiceClient) Search(ctx context.Context, in *common.SearchRequest, opts ...grpc.CallOption) (*common.SearchResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common.SearchResponse)
+	err := c.cc.Invoke(ctx, PostService_Search_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility.
@@ -143,6 +156,7 @@ type PostServiceServer interface {
 	FeaturePost(context.Context, *ToggleReq) (*CommonResp, error)
 	ExistsPost(context.Context, *IdPathReq) (*ExistsResp, error)
 	MetaPost(context.Context, *IdPathReq) (*PostMetaResp, error)
+	Search(context.Context, *common.SearchRequest) (*common.SearchResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -176,6 +190,9 @@ func (UnimplementedPostServiceServer) ExistsPost(context.Context, *IdPathReq) (*
 }
 func (UnimplementedPostServiceServer) MetaPost(context.Context, *IdPathReq) (*PostMetaResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method MetaPost not implemented")
+}
+func (UnimplementedPostServiceServer) Search(context.Context, *common.SearchRequest) (*common.SearchResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Search not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 func (UnimplementedPostServiceServer) testEmbeddedByValue()                     {}
@@ -342,6 +359,24 @@ func _PostService_MetaPost_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(common.SearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).Search(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_Search_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).Search(ctx, req.(*common.SearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -380,6 +415,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MetaPost",
 			Handler:    _PostService_MetaPost_Handler,
+		},
+		{
+			MethodName: "Search",
+			Handler:    _PostService_Search_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

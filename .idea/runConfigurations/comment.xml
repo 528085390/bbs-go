@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="comment" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="temp" />
+    <working_directory value="$PROJECT_DIR$/comment/rpc" />
+    <kind value="FILE" />
+    <package value="temp" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/comment/rpc/comment.go" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build search.go" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <module name="temp" />
+    <working_directory value="$PROJECT_DIR$/search/rpc" />
+    <kind value="FILE" />
+    <package value="temp" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/search/rpc/search.go" />
+    <method v="2" />
+  </configuration>
+</component>

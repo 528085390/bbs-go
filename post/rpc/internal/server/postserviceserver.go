@@ -7,6 +7,7 @@ package server
 import (
 	"context"
 
+	"temp/common/proto"
 	"temp/post/rpc/internal/logic"
 	"temp/post/rpc/internal/svc"
 	"temp/post/rpc/post"
@@ -61,4 +62,9 @@ func (s *PostServiceServer) ExistsPost(ctx context.Context, in *post.IdPathReq) 
 func (s *PostServiceServer) MetaPost(ctx context.Context, in *post.IdPathReq) (*post.PostMetaResp, error) {
 	l := logic.NewMetaPostLogic(ctx, s.svcCtx)
 	return l.MetaPost(in)
+}
+
+func (s *PostServiceServer) Search(ctx context.Context, in *proto.SearchRequest) (*proto.SearchResponse, error) {
+	l := logic.NewSearchLogic(ctx, s.svcCtx)
+	return l.Search(in)
 }

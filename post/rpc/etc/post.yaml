@@ -30,3 +30,17 @@ SectionRpc:
     Hosts:
       - 127.0.0.1:2379
     Key: section.rpc
+
+
+InteractionRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: interaction.rpc
+
+
+CommentRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: comment.rpc

@@ -44,7 +44,7 @@ func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comme
 	}
 
 	// 帖子是否存在
-	postRes, _ := l.svcCtx.PostService.ExistsPost(l.ctx, &post.IdPathReq{Id: postId})
+	postRes, _ := l.svcCtx.PostRpc.ExistsPost(l.ctx, &post.IdPathReq{Id: postId})
 	exists := postRes.Data
 	if !exists {
 		logx.Errorf("post not found: id=%d", postId)
@@ -52,7 +52,7 @@ func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comme
 	}
 
 	// 用户是否存在
-	userRes, _ := l.svcCtx.UserService.ExistsUser(l.ctx, &user.IdRequest{Id: authorId})
+	userRes, _ := l.svcCtx.UserRpc.ExistsUser(l.ctx, &user.IdRequest{Id: authorId})
 	exists = userRes.Data
 	if !exists {
 		logx.Errorf("user not found: id=%d", authorId)

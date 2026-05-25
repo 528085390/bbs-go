@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package post;
 option go_package = "./post";
+import "common/proto/common.proto";
 
 service PostService {
   rpc CreatePost(PostRequest) returns (PostResp);
@@ -12,6 +13,7 @@ service PostService {
   rpc FeaturePost(ToggleReq) returns (CommonResp);
   rpc ExistsPost(IdPathReq) returns (ExistsResp);
   rpc MetaPost(IdPathReq) returns (PostMetaResp);
+  rpc Search(common.SearchRequest) returns (common.SearchResponse);
 }
 
 message PostRequest {
@@ -65,5 +67,6 @@ message ExistsResp {
 message CommonResp {
   string message = 1;
 }
+
 
 // goctl rpc protoc post.proto --go_out=. --go-grpc_out=. --zrpc_out=.

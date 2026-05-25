@@ -14,12 +14,14 @@ import (
 )
 
 type (
-	CommentResp       = comment.CommentResp
-	CreateCommentReq  = comment.CreateCommentReq
-	DeleteCommentReq  = comment.DeleteCommentReq
-	DeleteCommentResp = comment.DeleteCommentResp
-	ListCommentsReq   = comment.ListCommentsReq
-	ListCommentsResp  = comment.ListCommentsResp
+	CommentResp         = comment.CommentResp
+	CreateCommentReq    = comment.CreateCommentReq
+	DeleteCommentReq    = comment.DeleteCommentReq
+	DeleteCommentResp   = comment.DeleteCommentResp
+	GetCommentCountReq  = comment.GetCommentCountReq
+	GetCommentCountResp = comment.GetCommentCountResp
+	ListCommentsReq     = comment.ListCommentsReq
+	ListCommentsResp    = comment.ListCommentsResp
 
 	CommentService interface {
 		// 创建评论
@@ -28,6 +30,8 @@ type (
 		ListComments(ctx context.Context, in *ListCommentsReq, opts ...grpc.CallOption) (*ListCommentsResp, error)
 		// 删除评论
 		DeleteComment(ctx context.Context, in *DeleteCommentReq, opts ...grpc.CallOption) (*DeleteCommentResp, error)
+		// 获取帖子评论数
+		GetCommentCount(ctx context.Context, in *GetCommentCountReq, opts ...grpc.CallOption) (*GetCommentCountResp, error)
 	}
 
 	defaultCommentService struct {
@@ -57,4 +61,10 @@ func (m *defaultCommentService) ListComments(ctx context.Context, in *ListCommen
 func (m *defaultCommentService) DeleteComment(ctx context.Context, in *DeleteCommentReq, opts ...grpc.CallOption) (*DeleteCommentResp, error) {
 	client := comment.NewCommentServiceClient(m.cli.Conn())
 	return client.DeleteComment(ctx, in, opts...)
+}
+
+// 获取帖子评论数
+func (m *defaultCommentService) GetCommentCount(ctx context.Context, in *GetCommentCountReq, opts ...grpc.CallOption) (*GetCommentCountResp, error) {
+	client := comment.NewCommentServiceClient(m.cli.Conn())
+	return client.GetCommentCount(ctx, in, opts...)
 }

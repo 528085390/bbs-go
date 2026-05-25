@@ -18,7 +18,7 @@ type anyInt interface {
 func IsValidInt[T anyInt](Id ...T) error {
 	for _, id := range Id {
 		if id < 0 {
-			return errors.New("id must be greater than 0")
+			return errors.New("num must be greater than 0")
 		}
 	}
 	return nil

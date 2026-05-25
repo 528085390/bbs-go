@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package file;
+
+option go_package = "./file";
+
+// 请求上传凭证
+message GetUploadURLRequest {
+  string filename = 1;      // 原始文件名
+  bool isPrivate = 2;       // 是否私有文件
+  string mimeType = 3;      // 文件 MIME 类型
+}
+
+// 上传凭证响应
+message UploadURLResponse {
+  string uploadUrl = 1;     // 预签名上传 URL
+  string downloadUrl = 2;   // 下载 URL
+  string objectKey = 3;     // OSS 对象键
+  int32 expiresIn = 4;      // 过期时间（秒）
+}
+
+// 确认上传完成
+message ConfirmUploadRequest {
+  string objectKey = 1;     // OSS 对象键
+  string filename = 2;      // 原始文件名
+  int64 fileSize = 3;       // 文件大小（字节）
+  string mimeType = 4;      // MIME 类型
+}
+
+// 确认上传响应
+message ConfirmUploadResponse {
+  string fileId = 1;        // 文件记录 ID
+  string url = 2;           // 访问 URL
+  string filename = 3;      // 文件名
+}
+
+// 获取文件请求
+message GetFileRequest {
+  string id = 1;
+}
+
+// URL 响应
+message UrlResponse {
+  string url = 1;
+}
+
+service FileService {
+  // 生成上传凭证（需要鉴权）
+  rpc GetUploadURL(GetUploadURLRequest) returns (UploadURLResponse);
+  // 生成上传头像的上传凭证（为当前用户）
+  rpc GetAvatarUploadURL(GetAvatarUploadRequest) returns (UploadURLResponse);
+  // 生成上传帖子图片的上传凭证（需要指定 post_id）
+  rpc GetPostImageUploadURL(GetPostImageUploadRequest) returns (UploadURLResponse);
+
+  // 确认上传完成（保存记录到数据库）
+  rpc ConfirmUpload(ConfirmUploadRequest) returns (ConfirmUploadResponse);
+  // 确认头像上传完成
+  rpc ConfirmAvatarUpload(ConfirmAvatarUploadRequest) returns (ConfirmUploadResponse);
+  // 确认帖子图片上传完成
+  rpc ConfirmPostImageUpload(ConfirmPostImageUploadRequest) returns (ConfirmUploadResponse);
+
+  // 获取文件信息
+  rpc GetFile(GetFileRequest) returns (UrlResponse);
+  // 获取用户头像
+  rpc GetAvatar(GetAvatarRequest) returns (UrlResponse);
+  // 获取某帖的图片列表
+  rpc GetPostImages(GetPostImagesRequest) returns (GetPostImagesResponse);
+}
+
+message GetAvatarUploadRequest {
+  string filename = 1;
+  bool isPrivate = 2;
+  string mimeType = 3;
+}
+
+message GetPostImageUploadRequest {
+  string filename = 1;
+  bool isPrivate = 2;
+  string mimeType = 3;
+  int64 post_id = 4;
+}
+
+message ConfirmAvatarUploadRequest {
+  string objectKey = 1;
+  string filename = 2;
+  int64 fileSize = 3;
+  string mimeType = 4;
+}
+
+message ConfirmPostImageUploadRequest {
+  string objectKey = 1;
+  string filename = 2;
+  int64 fileSize = 3;
+  string mimeType = 4;
+  int64 post_id = 5;
+}
+
+message GetAvatarRequest {
+  int64 user_id = 1;
+}
+
+message GetPostImagesRequest {
+  int64 post_id = 1;
+}
+
+message GetPostImagesResponse {
+  repeated UrlResponse items = 1;
+}

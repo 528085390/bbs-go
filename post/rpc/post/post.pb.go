@@ -11,6 +11,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+	common "temp/common/proto"
 	unsafe "unsafe"
 )
 
@@ -538,7 +539,7 @@ var File_post_proto protoreflect.FileDescriptor
 const file_post_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"post.proto\x12\x04post\"y\n" +
+	"post.proto\x12\x04post\x1a\x19common/proto/common.proto\"y\n" +
 	"\vPostRequest\x12\x1b\n" +
 	"\tauthor_id\x18\x01 \x01(\x03R\bauthorId\x12\x1d\n" +
 	"\n" +
@@ -584,7 +585,7 @@ const file_post_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x01(\bR\x04data\"&\n" +
 	"\n" +
 	"CommonResp\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\x90\x03\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xc9\x03\n" +
 	"\vPostService\x12/\n" +
 	"\n" +
 	"CreatePost\x12\x11.post.PostRequest\x1a\x0e.post.PostResp\x12*\n" +
@@ -597,7 +598,8 @@ const file_post_proto_rawDesc = "" +
 	"\vFeaturePost\x12\x0f.post.ToggleReq\x1a\x10.post.CommonResp\x12/\n" +
 	"\n" +
 	"ExistsPost\x12\x0f.post.IdPathReq\x1a\x10.post.ExistsResp\x12/\n" +
-	"\bMetaPost\x12\x0f.post.IdPathReq\x1a\x12.post.PostMetaRespB\bZ\x06./postb\x06proto3"
+	"\bMetaPost\x12\x0f.post.IdPathReq\x1a\x12.post.PostMetaResp\x127\n" +
+	"\x06Search\x12\x15.common.SearchRequest\x1a\x16.common.SearchResponseB\bZ\x06./postb\x06proto3"
 
 var (
 	file_post_proto_rawDescOnce sync.Once
@@ -613,14 +615,16 @@ func file_post_proto_rawDescGZIP() []byte {
 
 var file_post_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_post_proto_goTypes = []any{
-	(*PostRequest)(nil),   // 0: post.PostRequest
-	(*PostResp)(nil),      // 1: post.PostResp
-	(*PostMetaResp)(nil),  // 2: post.PostMetaResp
-	(*IdPathReq)(nil),     // 3: post.IdPathReq
-	(*UpdatePostReq)(nil), // 4: post.UpdatePostReq
-	(*ToggleReq)(nil),     // 5: post.ToggleReq
-	(*ExistsResp)(nil),    // 6: post.ExistsResp
-	(*CommonResp)(nil),    // 7: post.CommonResp
+	(*PostRequest)(nil),           // 0: post.PostRequest
+	(*PostResp)(nil),              // 1: post.PostResp
+	(*PostMetaResp)(nil),          // 2: post.PostMetaResp
+	(*IdPathReq)(nil),             // 3: post.IdPathReq
+	(*UpdatePostReq)(nil),         // 4: post.UpdatePostReq
+	(*ToggleReq)(nil),             // 5: post.ToggleReq
+	(*ExistsResp)(nil),            // 6: post.ExistsResp
+	(*CommonResp)(nil),            // 7: post.CommonResp
+	(*common.SearchRequest)(nil),  // 8: common.SearchRequest
+	(*common.SearchResponse)(nil), // 9: common.SearchResponse
 }
 var file_post_proto_depIdxs = []int32{
 	0, // 0: post.PostService.CreatePost:input_type -> post.PostRequest
@@ -631,16 +635,18 @@ var file_post_proto_depIdxs = []int32{
 	5, // 5: post.PostService.FeaturePost:input_type -> post.ToggleReq
 	3, // 6: post.PostService.ExistsPost:input_type -> post.IdPathReq
 	3, // 7: post.PostService.MetaPost:input_type -> post.IdPathReq
-	1, // 8: post.PostService.CreatePost:output_type -> post.PostResp
-	1, // 9: post.PostService.GetPost:output_type -> post.PostResp
-	1, // 10: post.PostService.UpdatePost:output_type -> post.PostResp
-	7, // 11: post.PostService.DeletePost:output_type -> post.CommonResp
-	7, // 12: post.PostService.PinPost:output_type -> post.CommonResp
-	7, // 13: post.PostService.FeaturePost:output_type -> post.CommonResp
-	6, // 14: post.PostService.ExistsPost:output_type -> post.ExistsResp
-	2, // 15: post.PostService.MetaPost:output_type -> post.PostMetaResp
-	8, // [8:16] is the sub-list for method output_type
-	0, // [0:8] is the sub-list for method input_type
+	8, // 8: post.PostService.Search:input_type -> common.SearchRequest
+	1, // 9: post.PostService.CreatePost:output_type -> post.PostResp
+	1, // 10: post.PostService.GetPost:output_type -> post.PostResp
+	1, // 11: post.PostService.UpdatePost:output_type -> post.PostResp
+	7, // 12: post.PostService.DeletePost:output_type -> post.CommonResp
+	7, // 13: post.PostService.PinPost:output_type -> post.CommonResp
+	7, // 14: post.PostService.FeaturePost:output_type -> post.CommonResp
+	6, // 15: post.PostService.ExistsPost:output_type -> post.ExistsResp
+	2, // 16: post.PostService.MetaPost:output_type -> post.PostMetaResp
+	9, // 17: post.PostService.Search:output_type -> common.SearchResponse
+	9, // [9:18] is the sub-list for method output_type
+	0, // [0:9] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

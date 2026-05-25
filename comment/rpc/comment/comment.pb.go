@@ -379,6 +379,96 @@ func (x *DeleteCommentResp) GetSuccess() bool {
 	return false
 }
 
+// 获取帖子评论数请求
+type GetCommentCountReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"` // 帖子ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCommentCountReq) Reset() {
+	*x = GetCommentCountReq{}
+	mi := &file_comment_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCommentCountReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCommentCountReq) ProtoMessage() {}
+
+func (x *GetCommentCountReq) ProtoReflect() protoreflect.Message {
+	mi := &file_comment_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCommentCountReq.ProtoReflect.Descriptor instead.
+func (*GetCommentCountReq) Descriptor() ([]byte, []int) {
+	return file_comment_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetCommentCountReq) GetPostId() int64 {
+	if x != nil {
+		return x.PostId
+	}
+	return 0
+}
+
+// 获取帖子评论数响应
+type GetCommentCountResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCommentCountResp) Reset() {
+	*x = GetCommentCountResp{}
+	mi := &file_comment_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCommentCountResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCommentCountResp) ProtoMessage() {}
+
+func (x *GetCommentCountResp) ProtoReflect() protoreflect.Message {
+	mi := &file_comment_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCommentCountResp.ProtoReflect.Descriptor instead.
+func (*GetCommentCountResp) Descriptor() ([]byte, []int) {
+	return file_comment_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetCommentCountResp) GetCount() int64 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_comment_proto protoreflect.FileDescriptor
 
 const file_comment_proto_rawDesc = "" +
@@ -408,11 +498,16 @@ const file_comment_proto_rawDesc = "" +
 	"\x10DeleteCommentReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"-\n" +
 	"\x11DeleteCommentResp\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xdf\x01\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"-\n" +
+	"\x12GetCommentCountReq\x12\x17\n" +
+	"\apost_id\x18\x01 \x01(\x03R\x06postId\"+\n" +
+	"\x13GetCommentCountResp\x12\x14\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\xad\x02\n" +
 	"\x0eCommentService\x12@\n" +
 	"\rCreateComment\x12\x19.comment.CreateCommentReq\x1a\x14.comment.CommentResp\x12C\n" +
 	"\fListComments\x12\x18.comment.ListCommentsReq\x1a\x19.comment.ListCommentsResp\x12F\n" +
-	"\rDeleteComment\x12\x19.comment.DeleteCommentReq\x1a\x1a.comment.DeleteCommentRespB\vZ\t./commentb\x06proto3"
+	"\rDeleteComment\x12\x19.comment.DeleteCommentReq\x1a\x1a.comment.DeleteCommentResp\x12L\n" +
+	"\x0fGetCommentCount\x12\x1b.comment.GetCommentCountReq\x1a\x1c.comment.GetCommentCountRespB\vZ\t./commentb\x06proto3"
 
 var (
 	file_comment_proto_rawDescOnce sync.Once
@@ -426,25 +521,29 @@ func file_comment_proto_rawDescGZIP() []byte {
 	return file_comment_proto_rawDescData
 }
 
-var file_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_comment_proto_goTypes = []any{
-	(*CreateCommentReq)(nil),  // 0: comment.CreateCommentReq
-	(*CommentResp)(nil),       // 1: comment.CommentResp
-	(*ListCommentsReq)(nil),   // 2: comment.ListCommentsReq
-	(*ListCommentsResp)(nil),  // 3: comment.ListCommentsResp
-	(*DeleteCommentReq)(nil),  // 4: comment.DeleteCommentReq
-	(*DeleteCommentResp)(nil), // 5: comment.DeleteCommentResp
+	(*CreateCommentReq)(nil),    // 0: comment.CreateCommentReq
+	(*CommentResp)(nil),         // 1: comment.CommentResp
+	(*ListCommentsReq)(nil),     // 2: comment.ListCommentsReq
+	(*ListCommentsResp)(nil),    // 3: comment.ListCommentsResp
+	(*DeleteCommentReq)(nil),    // 4: comment.DeleteCommentReq
+	(*DeleteCommentResp)(nil),   // 5: comment.DeleteCommentResp
+	(*GetCommentCountReq)(nil),  // 6: comment.GetCommentCountReq
+	(*GetCommentCountResp)(nil), // 7: comment.GetCommentCountResp
 }
 var file_comment_proto_depIdxs = []int32{
 	1, // 0: comment.ListCommentsResp.comments:type_name -> comment.CommentResp
 	0, // 1: comment.CommentService.CreateComment:input_type -> comment.CreateCommentReq
 	2, // 2: comment.CommentService.ListComments:input_type -> comment.ListCommentsReq
 	4, // 3: comment.CommentService.DeleteComment:input_type -> comment.DeleteCommentReq
-	1, // 4: comment.CommentService.CreateComment:output_type -> comment.CommentResp
-	3, // 5: comment.CommentService.ListComments:output_type -> comment.ListCommentsResp
-	5, // 6: comment.CommentService.DeleteComment:output_type -> comment.DeleteCommentResp
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
+	6, // 4: comment.CommentService.GetCommentCount:input_type -> comment.GetCommentCountReq
+	1, // 5: comment.CommentService.CreateComment:output_type -> comment.CommentResp
+	3, // 6: comment.CommentService.ListComments:output_type -> comment.ListCommentsResp
+	5, // 7: comment.CommentService.DeleteComment:output_type -> comment.DeleteCommentResp
+	7, // 8: comment.CommentService.GetCommentCount:output_type -> comment.GetCommentCountResp
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -461,7 +560,7 @@ func file_comment_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_comment_proto_rawDesc), len(file_comment_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

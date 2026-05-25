@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "./search";
+
+import "common/proto/common.proto";
+
+// 搜索服务
+service SearchService {
+  // 分页搜索
+  rpc Search(common.SearchRequest) returns (common.SearchResponse);
+}

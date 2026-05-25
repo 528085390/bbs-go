@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"temp/comment/rpc/internal/config"
 	"temp/common/db"
+	"temp/interaction/rpc/internal/config"
 	"temp/post/rpc/postservice"
 	"temp/user/userclient"
 
@@ -13,15 +13,15 @@ import (
 type ServiceContext struct {
 	Config  config.Config
 	Db      *gorm.DB
-	PostRpc postservice.PostService
 	UserRpc userclient.User
+	PostRpc postservice.PostService
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:  c,
 		Db:      db.GetDB(),
-		PostRpc: postservice.NewPostService(zrpc.MustNewClient(c.PostRpc)),
 		UserRpc: userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		PostRpc: postservice.NewPostService(zrpc.MustNewClient(c.PostRpc)),
 	}
 }

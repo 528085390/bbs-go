@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "./common";
+
+// 搜索请求
+message SearchRequest {
+  string keyword = 1;           // 搜索关键字
+  int32 page = 2;               // 页码
+  int32 page_size = 3;          // 每页数量
+  string sort_field = 4;        // 排序字段
+  string sort_order = 5;        // 排序方式: asc/desc
+}
+
+// 搜索结果项
+message SearchResult {
+  int64 id = 1;                 // 帖子ID
+  string title = 2;             // 标题
+  string author_name = 3;            // 作者
+  int64 author_id = 4;          // 作者ID
+  int64 view_count = 8;         // 浏览量
+  int64 favourite_count = 9;         // 收藏数
+  int64 comment_count = 10;     // 评论数
+  string created_at = 11;        // 创建时间
+  string updated_at = 12;        // 更新时间
+}
+
+// 搜索响应
+message SearchResponse {
+  repeated SearchResult items = 1;   // 结果列表
+  int64 total = 2;                   // 总数
+}

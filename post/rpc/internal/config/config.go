@@ -9,9 +9,11 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	RabbitMQ   mq.RabbitMQConf
-	UserRpc    zrpc.RpcClientConf
-	SectionRpc zrpc.RpcClientConf
+	RabbitMQ       mq.RabbitMQConf
+	UserRpc        zrpc.RpcClientConf
+	SectionRpc     zrpc.RpcClientConf
+	InteractionRpc zrpc.RpcClientConf
+	CommentRpc     zrpc.RpcClientConf
 }
 
 func (c *Config) LoadFromEnv() {
