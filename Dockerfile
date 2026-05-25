@@ -2,16 +2,20 @@ FROM golang:1.25-alpine AS builder
 
 ARG SERVICE
 
+# 换 alpine 源加速
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add --no-cache tzdata
 
-WORKDIR /src
-
-COPY go.mod go.sum ./
+# 换 Go 代理
 RUN go env -w GOPROXY=https://goproxy.cn,direct
+
+WORKDIR /src
+COPY go.mod go.sum ./
 RUN go mod download -x
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/bin ./${SERVICE}
+RUN CGO_ENABLED=0 GOOS=linux go build -v -x -ldflags="-s -w" -o /app/bin ./${SERVICE}
+
 
 FROM alpine:3.19
 
