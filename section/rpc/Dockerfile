@@ -10,7 +10,7 @@ COPY go.mod go.sum ./
 RUN go mod download -x
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -v -x -ldflags="-s -w" -o /app/bin ./auth
+RUN CGO_ENABLED=0 GOOS=linux go build -v -x -ldflags="-s -w" -o /app/bin ./section/rpc
 
 FROM alpine:3.19
 
@@ -19,8 +19,8 @@ RUN apk add --no-cache tzdata ca-certificates
 WORKDIR /app
 
 COPY --from=builder /app/bin /app/bin
-COPY --from=builder /src/auth/etc /app/etc
+COPY --from=builder /src/section/rpc/etc /app/etc
 
-EXPOSE 8001
+EXPOSE 8003
 
 ENTRYPOINT ["/app/bin"]
