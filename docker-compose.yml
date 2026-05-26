@@ -104,8 +104,7 @@ services:
     container_name: bbs-user
     build:
       context: .
-      args:
-        SERVICE: user
+      dockerfile: user/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -125,8 +124,7 @@ services:
     container_name: bbs-auth
     build:
       context: .
-      args:
-        SERVICE: auth
+      dockerfile: auth/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -149,8 +147,7 @@ services:
     container_name: bbs-section
     build:
       context: .
-      args:
-        SERVICE: section/rpc
+      dockerfile: section/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -170,8 +167,7 @@ services:
     container_name: bbs-post
     build:
       context: .
-      args:
-        SERVICE: post/rpc
+      dockerfile: post/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -201,8 +197,7 @@ services:
     container_name: bbs-interaction
     build:
       context: .
-      args:
-        SERVICE: interaction/rpc
+      dockerfile: interaction/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -226,8 +221,7 @@ services:
     container_name: bbs-comment
     build:
       context: .
-      args:
-        SERVICE: comment/rpc
+      dockerfile: comment/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -251,8 +245,7 @@ services:
     container_name: bbs-search
     build:
       context: .
-      args:
-        SERVICE: search/rpc
+      dockerfile: search/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -272,8 +265,7 @@ services:
     container_name: bbs-file
     build:
       context: .
-      args:
-        SERVICE: file/rpc
+      dockerfile: file/rpc/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
@@ -301,8 +293,7 @@ services:
     container_name: bbs-gateway
     build:
       context: .
-      args:
-        SERVICE: gateway
+      dockerfile: gateway/Dockerfile
     restart: unless-stopped
     networks:
       - bbs-net
