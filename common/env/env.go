@@ -48,6 +48,7 @@ func OverrideRpcServerConf(c *zrpc.RpcServerConf) {
 
 // OverrideRpcClientConf 用环境变量覆盖 RpcClientConf（调用下游 RPC）
 // 环境变量命名规则: {PREFIX}_TARGET -> 直连地址, {PREFIX}_ETCD_HOSTS -> etcd 地址列表
+// 若均未设置, 回退到通用 ETCD_HOSTS
 func OverrideRpcClientConf(c *zrpc.RpcClientConf, prefix string) {
 	targetKey := prefix + "_TARGET"
 	if target := GetEnv(targetKey, ""); target != "" {
@@ -57,6 +58,8 @@ func OverrideRpcClientConf(c *zrpc.RpcClientConf, prefix string) {
 	}
 	etcdHostsKey := prefix + "_ETCD_HOSTS"
 	if hosts := GetEnvSlice(etcdHostsKey, nil); len(hosts) > 0 {
+		c.Etcd.Hosts = hosts
+	} else if hosts := GetEnvSlice("ETCD_HOSTS", nil); len(hosts) > 0 {
 		c.Etcd.Hosts = hosts
 	}
 }
