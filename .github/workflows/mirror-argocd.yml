@@ -12,22 +12,35 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq skopeo
 
-      - name: Copy ArgoCD images to Aliyun ACR
+      - name: Debug registry info
+        env:
+          ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+          ACR_NS: ${{ secrets.ACR_NAMESPACE }}
+        run: |
+          echo "Registry length: ${#ACR_REGISTRY}"
+          echo "Namespace length: ${#ACR_NS}"
+          echo "Combined: $ACR_REGISTRY/$ACR_NS"
+
+      - name: Copy argocd core
         env:
           ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
           ACR_NS: ${{ secrets.ACR_NAMESPACE }}
           ACR_USER: ${{ secrets.ACR_USERNAME }}
           ACR_PASS: ${{ secrets.ACR_PASSWORD }}
         run: |
-          DST="docker://$ACR_REGISTRY/$ACR_NS"
-          AUTH="--dest-creds=$ACR_USER:$ACR_PASS"
-
-          echo "=== argocd core ==="
-          skopeo copy $AUTH \
+          skopeo copy \
+            --dest-creds="$ACR_USER:$ACR_PASS" \
             "docker://quay.io/argoproj/argocd:v2.10.8" \
-            "$DST/argocd:v2.10.8"
+            "docker://${ACR_REGISTRY}/${ACR_NS}/argocd:v2.10.8"
 
-          echo "=== redis ==="
-          skopeo copy $AUTH \
+      - name: Copy redis
+        env:
+          ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+          ACR_NS: ${{ secrets.ACR_NAMESPACE }}
+          ACR_USER: ${{ secrets.ACR_USERNAME }}
+          ACR_PASS: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          skopeo copy \
+            --dest-creds="$ACR_USER:$ACR_PASS" \
             "docker://docker.io/library/redis:7.0.14-alpine" \
-            "$DST/argocd-redis:7.0.14-alpine"
+            "docker://${ACR_REGISTRY}/${ACR_NS}/argocd-redis:7.0.14-alpine"
