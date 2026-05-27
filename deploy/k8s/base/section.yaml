@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: section
+  namespace: temp
+  labels:
+    app: section
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: section
+  template:
+    metadata:
+      labels:
+        app: section
+    spec:
+      containers:
+      - name: section
+        image: temp-section:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8003
+        envFrom:
+        - configMapRef:
+            name: bbs-config
+        readinessProbe:
+          tcpSocket:
+            port: 8003
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8003
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: section-svc
+  namespace: temp
+spec:
+  ports:
+  - port: 8003
+    targetPort: 8003
+  selector:
+    app: section

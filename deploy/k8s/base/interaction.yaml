@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interaction
+  namespace: temp
+  labels:
+    app: interaction
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: interaction
+  template:
+    metadata:
+      labels:
+        app: interaction
+    spec:
+      containers:
+      - name: interaction
+        image: temp-interaction:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8006
+        envFrom:
+        - configMapRef:
+            name: bbs-config
+        readinessProbe:
+          tcpSocket:
+            port: 8006
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8006
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: interaction-svc
+  namespace: temp
+spec:
+  ports:
+  - port: 8006
+    targetPort: 8006
+  selector:
+    app: interaction

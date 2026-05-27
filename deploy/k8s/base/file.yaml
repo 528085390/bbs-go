@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file
+  namespace: temp
+  labels:
+    app: file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file
+  template:
+    metadata:
+      labels:
+        app: file
+    spec:
+      containers:
+      - name: file
+        image: temp-file:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8010
+        envFrom:
+        - configMapRef:
+            name: bbs-config
+        env:
+        - name: OSS_ENDPOINT
+          value: ""
+        - name: OSS_ACCESS_KEY_ID
+          value: ""
+        - name: OSS_ACCESS_KEY_SECRET
+          value: ""
+        - name: OSS_BUCKET_NAME
+          value: ""
+        - name: OSS_BASE_URL
+          value: ""
+        readinessProbe:
+          tcpSocket:
+            port: 8010
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8010
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-svc
+  namespace: temp
+spec:
+  ports:
+  - port: 8010
+    targetPort: 8010
+  selector:
+    app: file

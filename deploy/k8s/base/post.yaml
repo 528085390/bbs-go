@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post
+  namespace: temp
+  labels:
+    app: post
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: post
+  template:
+    metadata:
+      labels:
+        app: post
+    spec:
+      containers:
+      - name: post
+        image: temp-post:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8005
+        envFrom:
+        - configMapRef:
+            name: bbs-config
+        readinessProbe:
+          tcpSocket:
+            port: 8005
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8005
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-svc
+  namespace: temp
+spec:
+  ports:
+  - port: 8005
+    targetPort: 8005
+  selector:
+    app: post

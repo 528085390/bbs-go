@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: temp
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - pvc.yaml
+  - postgres.yaml
+  - etcd.yaml
+  - rabbitmq.yaml
+  - user.yaml
+  - auth.yaml
+  - section.yaml
+  - post.yaml
+  - comment.yaml
+  - interaction.yaml
+  - search.yaml
+  - file.yaml
+  - gateway.yaml
+
+commonLabels:
+  project: bbs-go
+  managed-by: kustomize

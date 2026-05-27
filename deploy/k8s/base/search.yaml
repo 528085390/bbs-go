@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search
+  namespace: temp
+  labels:
+    app: search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search
+  template:
+    metadata:
+      labels:
+        app: search
+    spec:
+      containers:
+      - name: search
+        image: temp-search:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8007
+        envFrom:
+        - configMapRef:
+            name: bbs-config
+        readinessProbe:
+          tcpSocket:
+            port: 8007
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8007
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-svc
+  namespace: temp
+spec:
+  ports:
+  - port: 8007
+    targetPort: 8007
+  selector:
+    app: search
