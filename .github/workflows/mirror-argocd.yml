@@ -14,32 +14,21 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq skopeo
 
-      - name: Copy images from quay.io to ghcr.io
+      - name: Copy images to ghcr.io
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SRC="docker://quay.io/argoproj"
           DST="docker://ghcr.io/${{ github.repository }}"
+          AUTH="--dest-creds=${{ github.actor }}:$GHCR_TOKEN"
 
-          copy_img() {
-            local name=$1 tag=$2
-            echo "=== Copying $name:$tag ==="
-            skopeo copy \
-              --src-tls-verify=true \
-              --dest-tls-verify=true \
-              --dest-creds="${{ github.actor }}:$GHCR_TOKEN" \
-              "$SRC/$name:$tag" \
-              "$DST/argocd-$name:$tag"
-          }
+          # 核心镜像（已成功）
+          echo "=== argocd core ==="
+          skopeo copy $AUTH \
+            "docker://quay.io/argoproj/argocd:v2.10.8" \
+            "$DST/argocd:core-v2.10.8"
 
-          copy_img argocd              v2.10.8
-          copy_img argocd-dex          v2.10.8
-          copy_img argocd-notifications v2.10.8
-          copy_img argocd-applicationset v2.10.8
-
-          echo "=== Copying redis ==="
-          skopeo copy \
-            --dest-tls-verify=true \
-            --dest-creds="${{ github.actor }}:$GHCR_TOKEN" \
+          # redis（从 Docker Hub）
+          echo "=== redis ==="
+          skopeo copy $AUTH \
             "docker://docker.io/library/redis:7.0.14-alpine" \
             "$DST/argocd-redis:7.0.14-alpine"
