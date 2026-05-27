@@ -16,21 +16,40 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull and retag
+      - name: Pull and retag with retry
         run: |
           REGISTRY="ghcr.io/${{ github.repository }}"
 
-          docker pull quay.io/argoproj/argocd:v2.10.8
-          docker pull quay.io/argoproj/argocd-dex:v2.10.8
-          docker pull quay.io/argoproj/argocd-notifications:v2.10.8
-          docker pull quay.io/argoproj/argocd-applicationset:v2.10.8
-          docker pull redis:7.0.14-alpine
+          pull_with_retry() {
+            local img=$1 tag=$2 max=3
+            for i in $(seq 1 $max); do
+              echo "[$i/$max] docker pull $img:$tag"
+              if docker pull "$img:$tag"; then
+                return 0
+              fi
+              echo "Failed, waiting 10s..."
+              sleep 10
+            done
+            return 1
+          }
 
-          docker tag quay.io/argoproj/argocd:v2.10.8              $REGISTRY/argocd:core-v2.10.8
-          docker tag quay.io/argoproj/argocd-dex:v2.10.8          $REGISTRY/argocd:dex-v2.10.8
-          docker tag quay.io/argoproj/argocd-notifications:v2.10.8 $REGISTRY/argocd:notifications-v2.10.8
+          # 逐个拉取，每个之间间隔
+          pull_with_retry quay.io/argoproj/argocd v2.10.8
+          sleep 5
+          pull_with_retry quay.io/argoproj/argocd-dex v2.10.8
+          sleep 5
+          pull_with_retry quay.io/argoproj/argocd-notifications v2.10.8
+          sleep 5
+          pull_with_retry quay.io/argoproj/argocd-applicationset v2.10.8
+          sleep 5
+          pull_with_retry redis 7.0.14-alpine
+
+          # 打标签
+          docker tag quay.io/argoproj/argocd:v2.10.8                $REGISTRY/argocd:core-v2.10.8
+          docker tag quay.io/argoproj/argocd-dex:v2.10.8            $REGISTRY/argocd:dex-v2.10.8
+          docker tag quay.io/argoproj/argocd-notifications:v2.10.8  $REGISTRY/argocd:notifications-v2.10.8
           docker tag quay.io/argoproj/argocd-applicationset:v2.10.8 $REGISTRY/argocd:applicationset-v2.10.8
-          docker tag redis:7.0.14-alpine                          $REGISTRY/argocd:redis-7.0.14-alpine
+          docker tag redis:7.0.14-alpine                            $REGISTRY/argocd:redis-7.0.14-alpine
 
-          # 一次推送所有标签
+          # 推送
           docker push $REGISTRY/argocd --all-tags
