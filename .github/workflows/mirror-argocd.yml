@@ -16,22 +16,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull and retag ArgoCD images
+      - name: Pull and retag
         run: |
           REGISTRY="ghcr.io/${{ github.repository }}"
-          VERSION=v2.10.8
-          REDIS_VER=7.0.14-alpine
 
-          mirror() {
-            local src=$1 tag=$2 name=$3
-            echo "=== $src:$tag -> $REGISTRY/argocd-$name:$tag ==="
-            docker pull "$src:$tag"
-            docker tag "$src:$tag" "$REGISTRY/argocd-$name:$tag"
-            docker push "$REGISTRY/argocd-$name:$tag"
-          }
+          docker pull quay.io/argoproj/argocd:v2.10.8
+          docker pull quay.io/argoproj/argocd-dex:v2.10.8
+          docker pull quay.io/argoproj/argocd-notifications:v2.10.8
+          docker pull quay.io/argoproj/argocd-applicationset:v2.10.8
+          docker pull redis:7.0.14-alpine
 
-          mirror quay.io/argoproj/argocd                $VERSION core
-          mirror quay.io/argoproj/argocd-dex             $VERSION dex
-          mirror quay.io/argoproj/argocd-notifications   $VERSION notifications
-          mirror quay.io/argoproj/argocd-applicationset  $VERSION applicationset
-          mirror redis                                    $REDIS_VER redis
+          docker tag quay.io/argoproj/argocd:v2.10.8              $REGISTRY/argocd:core-v2.10.8
+          docker tag quay.io/argoproj/argocd-dex:v2.10.8          $REGISTRY/argocd:dex-v2.10.8
+          docker tag quay.io/argoproj/argocd-notifications:v2.10.8 $REGISTRY/argocd:notifications-v2.10.8
+          docker tag quay.io/argoproj/argocd-applicationset:v2.10.8 $REGISTRY/argocd:applicationset-v2.10.8
+          docker tag redis:7.0.14-alpine                          $REGISTRY/argocd:redis-7.0.14-alpine
+
+          # 一次推送所有标签
+          docker push $REGISTRY/argocd --all-tags
