@@ -33,17 +33,13 @@ spec:
               name: bbs-config
               key: MQ_PASSWORD
         readinessProbe:
-          exec:
-            command:
-            - rabbitmq-diagnostics
-            - check_port_connectivity
-          initialDelaySeconds: 10
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 15
           periodSeconds: 10
         livenessProbe:
-          exec:
-            command:
-            - rabbitmq-diagnostics
-            - check_port_connectivity
+          tcpSocket:
+            port: 5672
           initialDelaySeconds: 30
           periodSeconds: 20
         resources:
