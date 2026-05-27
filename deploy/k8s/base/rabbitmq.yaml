@@ -53,6 +53,13 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/rabbitmq
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: rabbitmq-pvc
 ---
 apiVersion: v1
 kind: Service
