@@ -20,6 +20,7 @@ resources:
   - file.yaml
   - gateway.yaml
 
-commonLabels:
-  project: bbs-go
-  managed-by: kustomize
+labels:
+  - pairs:
+      project: bbs-go
+      managed-by: kustomize

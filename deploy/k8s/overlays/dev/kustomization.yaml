@@ -5,6 +5,53 @@ resources:
   - ../../base
   - ingress.yaml
 
-patchesStrategicMerge:
-  - patch-replicas.yaml
-  - patch-resources.yaml
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+    target:
+      kind: Deployment
+      namespace: temp
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 200m
+            memory: 384Mi
+          limits:
+            cpu: 800m
+            memory: 768Mi
+    target:
+      kind: Deployment
+      namespace: temp
+      name: user|auth|post|gateway
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 150m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+    target:
+      kind: Deployment
+      namespace: temp
+      name: section|comment|interaction
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+    target:
+      kind: Deployment
+      namespace: temp
+      name: search|file
