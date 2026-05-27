@@ -5,6 +5,35 @@ resources:
   - ../../base
   - ingress.yaml
 
+images:
+  - name: temp-auth
+    newName: ghcr.io/528085390/bbs-go/auth
+    newTag: latest
+  - name: temp-user
+    newName: ghcr.io/528085390/bbs-go/user
+    newTag: latest
+  - name: temp-section
+    newName: ghcr.io/528085390/bbs-go/section
+    newTag: latest
+  - name: temp-post
+    newName: ghcr.io/528085390/bbs-go/post
+    newTag: latest
+  - name: temp-comment
+    newName: ghcr.io/528085390/bbs-go/comment
+    newTag: latest
+  - name: temp-interaction
+    newName: ghcr.io/528085390/bbs-go/interaction
+    newTag: latest
+  - name: temp-search
+    newName: ghcr.io/528085390/bbs-go/search
+    newTag: latest
+  - name: temp-file
+    newName: ghcr.io/528085390/bbs-go/file
+    newTag: latest
+  - name: temp-gateway
+    newName: ghcr.io/528085390/bbs-go/gateway
+    newTag: latest
+
 patches:
   - patch: |-
       - op: replace
