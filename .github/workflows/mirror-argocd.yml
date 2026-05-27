@@ -9,47 +9,37 @@ jobs:
     permissions:
       packages: write
     steps:
-      - name: Log in to ghcr.io
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull and retag with retry
+      - name: Install skopeo
         run: |
-          REGISTRY="ghcr.io/${{ github.repository }}"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq skopeo
 
-          pull_with_retry() {
-            local img=$1 tag=$2 max=3
-            for i in $(seq 1 $max); do
-              echo "[$i/$max] docker pull $img:$tag"
-              if docker pull "$img:$tag"; then
-                return 0
-              fi
-              echo "Failed, waiting 10s..."
-              sleep 10
-            done
-            return 1
+      - name: Copy images from quay.io to ghcr.io
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SRC="docker://quay.io/argoproj"
+          DST="docker://ghcr.io/${{ github.repository }}"
+
+          copy_img() {
+            local name=$1 tag=$2
+            echo "=== Copying $name:$tag ==="
+            skopeo copy \
+              --src-tls-verify=true \
+              --dest-tls-verify=true \
+              --dest-creds="${{ github.actor }}:$GHCR_TOKEN" \
+              "$SRC/$name:$tag" \
+              "$DST/argocd-$name:$tag"
           }
 
-          # 逐个拉取，每个之间间隔
-          pull_with_retry quay.io/argoproj/argocd v2.10.8
-          sleep 5
-          pull_with_retry quay.io/argoproj/argocd-dex v2.10.8
-          sleep 5
-          pull_with_retry quay.io/argoproj/argocd-notifications v2.10.8
-          sleep 5
-          pull_with_retry quay.io/argoproj/argocd-applicationset v2.10.8
-          sleep 5
-          pull_with_retry redis 7.0.14-alpine
+          copy_img argocd              v2.10.8
+          copy_img argocd-dex          v2.10.8
+          copy_img argocd-notifications v2.10.8
+          copy_img argocd-applicationset v2.10.8
 
-          # 打标签
-          docker tag quay.io/argoproj/argocd:v2.10.8                $REGISTRY/argocd:core-v2.10.8
-          docker tag quay.io/argoproj/argocd-dex:v2.10.8            $REGISTRY/argocd:dex-v2.10.8
-          docker tag quay.io/argoproj/argocd-notifications:v2.10.8  $REGISTRY/argocd:notifications-v2.10.8
-          docker tag quay.io/argoproj/argocd-applicationset:v2.10.8 $REGISTRY/argocd:applicationset-v2.10.8
-          docker tag redis:7.0.14-alpine                            $REGISTRY/argocd:redis-7.0.14-alpine
-
-          # 推送
-          docker push $REGISTRY/argocd --all-tags
+          echo "=== Copying redis ==="
+          skopeo copy \
+            --dest-tls-verify=true \
+            --dest-creds="${{ github.actor }}:$GHCR_TOKEN" \
+            "docker://docker.io/library/redis:7.0.14-alpine" \
+            "$DST/argocd-redis:7.0.14-alpine"
