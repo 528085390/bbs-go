@@ -6,28 +6,27 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - name: Install skopeo
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq skopeo
 
-      - name: Copy images to ghcr.io
+      - name: Copy ArgoCD images to Aliyun ACR
         env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+          ACR_NS: ${{ secrets.ACR_NAMESPACE }}
+          ACR_USER: ${{ secrets.ACR_USERNAME }}
+          ACR_PASS: ${{ secrets.ACR_PASSWORD }}
         run: |
-          DST="docker://ghcr.io/${{ github.repository }}"
-          AUTH="--dest-creds=${{ github.actor }}:$GHCR_TOKEN"
+          DST="docker://$ACR_REGISTRY/$ACR_NS"
+          AUTH="--dest-creds=$ACR_USER:$ACR_PASS"
 
-          # 核心镜像（已成功）
           echo "=== argocd core ==="
           skopeo copy $AUTH \
             "docker://quay.io/argoproj/argocd:v2.10.8" \
-            "$DST/argocd:core-v2.10.8"
+            "$DST/argocd:v2.10.8"
 
-          # redis（从 Docker Hub）
           echo "=== redis ==="
           skopeo copy $AUTH \
             "docker://docker.io/library/redis:7.0.14-alpine" \
