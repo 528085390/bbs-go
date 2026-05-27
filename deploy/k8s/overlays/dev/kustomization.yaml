@@ -2,85 +2,85 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../base
-  - ingress.yaml
+- ../../base
+- ingress.yaml
 
 images:
-  - name: temp-auth
-    newName: ghcr.io/528085390/bbs-go/auth
-    newTag: latest
-  - name: temp-user
-    newName: ghcr.io/528085390/bbs-go/user
-    newTag: latest
-  - name: temp-section
-    newName: ghcr.io/528085390/bbs-go/section
-    newTag: latest
-  - name: temp-post
-    newName: ghcr.io/528085390/bbs-go/post
-    newTag: latest
-  - name: temp-comment
-    newName: ghcr.io/528085390/bbs-go/comment
-    newTag: latest
-  - name: temp-interaction
-    newName: ghcr.io/528085390/bbs-go/interaction
-    newTag: latest
-  - name: temp-search
-    newName: ghcr.io/528085390/bbs-go/search
-    newTag: latest
-  - name: temp-file
-    newName: ghcr.io/528085390/bbs-go/file
-    newTag: latest
-  - name: temp-gateway
-    newName: ghcr.io/528085390/bbs-go/gateway
-    newTag: latest
+- name: temp-auth
+  newName: ghcr.io/528085390/bbs-go/auth
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-comment
+  newName: ghcr.io/528085390/bbs-go/comment
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-file
+  newName: ghcr.io/528085390/bbs-go/file
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-gateway
+  newName: ghcr.io/528085390/bbs-go/gateway
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-interaction
+  newName: ghcr.io/528085390/bbs-go/interaction
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-post
+  newName: ghcr.io/528085390/bbs-go/post
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-search
+  newName: ghcr.io/528085390/bbs-go/search
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-section
+  newName: ghcr.io/528085390/bbs-go/section
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
+- name: temp-user
+  newName: ghcr.io/528085390/bbs-go/user
+  newTag: sha-6f9d8e6a659209b2fa912071bb3c53aa2180d11f
 
 patches:
-  - patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
-    target:
-      kind: Deployment
-      namespace: temp
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/resources
-        value:
-          requests:
-            cpu: 200m
-            memory: 384Mi
-          limits:
-            cpu: 800m
-            memory: 768Mi
-    target:
-      kind: Deployment
-      namespace: temp
-      name: user|auth|post|gateway
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/resources
-        value:
-          requests:
-            cpu: 150m
-            memory: 256Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
-    target:
-      kind: Deployment
-      namespace: temp
-      name: section|comment|interaction
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/resources
-        value:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 300m
-            memory: 256Mi
-    target:
-      kind: Deployment
-      namespace: temp
-      name: search|file
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: Deployment
+    namespace: temp
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources
+      value:
+        requests:
+          cpu: 200m
+          memory: 384Mi
+        limits:
+          cpu: 800m
+          memory: 768Mi
+  target:
+    kind: Deployment
+    name: user|auth|post|gateway
+    namespace: temp
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources
+      value:
+        requests:
+          cpu: 150m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+  target:
+    kind: Deployment
+    name: section|comment|interaction
+    namespace: temp
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources
+      value:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 300m
+          memory: 256Mi
+  target:
+    kind: Deployment
+    name: search|file
+    namespace: temp
