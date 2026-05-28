@@ -74,6 +74,9 @@ kubectl rollout restart deployment/auth -n temp
 # 暂停/恢复滚动更新
 kubectl rollout pause deployment/auth -n temp
 kubectl rollout resume deployment/auth -n temp
+
+
+kubectl get deployments -n ms -o name | xargs -I {} kubectl scale {} --replicas=0 -n ms
 ```
 
 ---
