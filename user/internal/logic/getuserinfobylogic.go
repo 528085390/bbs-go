@@ -33,21 +33,21 @@ func (l *GetUserInfoByLogic) GetUserInfoBy(in *user.GetUserInfoRequest) (*user.U
 	// 参数校验 TODO err
 	if arg == "" {
 		logx.Error("GetUserInfoBy arg is empty")
-		return nil, errs.New(errorcode.ParamError, "arg is empty")
+		return nil, errs.New(errorcode.BadRequest, "arg is empty")
 	}
 	if arg != "email" && arg != "username" && arg != "id" {
 		logx.Error("GetUserInfoBy arg is not email or username or id")
-		return nil, errs.New(errorcode.ParamError, "arg is not email or username or id")
+		return nil, errs.New(errorcode.BadRequest, "arg is not email or username or id")
 	}
 
 	var res *gorm.DB
 	var resUser models.User
 	if arg == "email" {
-		res = l.svcCtx.Db.Table("users").Where("email = ?", in.Email).First(&resUser)
+		res = l.svcCtx.Db.Model(&models.User{}).Where("email = ?", in.Email).First(&resUser)
 	} else if arg == "username" {
-		res = l.svcCtx.Db.Table("users").Where("username = ?", in.Username).First(&resUser)
+		res = l.svcCtx.Db.Model(&models.User{}).Where("username = ?", in.Username).First(&resUser)
 	} else {
-		res = l.svcCtx.Db.Table("users").Where("id = ?", in.Id).First(&resUser)
+		res = l.svcCtx.Db.Model(&models.User{}).Where("id = ?", in.Id).First(&resUser)
 	}
 	if res != nil && res.Error != nil {
 		logx.Errorf("GetUserInfoBy in database err: %v", res.Error)

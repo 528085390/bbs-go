@@ -13,7 +13,6 @@ import (
 	"temp/comment/rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"golang.org/x/exp/slices"
 )
 
 type DeleteCommentLogic struct {
@@ -48,18 +47,13 @@ func (l *DeleteCommentLogic) DeleteComment(in *comment.DeleteCommentReq) (*comme
 		return nil, errs.Wrap(errorcode.NotFound, res.Error, "评论不存在")
 	}
 
-	// 鉴权
+	// 鉴权：作者本人或 admin 可删除
 	userId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
 		logx.Errorf("get user id failed: %v", err)
 		return nil, errs.Wrap(errorcode.Unauthorized, err, "获取用户信息失败")
 	}
-	userRoles, err := httpctx.GetRoles(l.ctx)
-	if err != nil {
-		logx.Errorf("get roles failed: %v", err)
-		return nil, errs.Wrap(errorcode.ServerError, err, "获取角色信息失败")
-	}
-	if commentRes.AuthorID != userId || !slices.Contains(userRoles, "admin") {
+	if commentRes.AuthorID != userId && !httpctx.IsAdmin(l.ctx) {
 		logx.Errorf("delete comment forbidden: user=%d comment=%d", userId, id)
 		return nil, errs.New(errorcode.Forbidden, fmt.Sprintf("用户 %d 无权限删除评论 %d", userId, id))
 	}

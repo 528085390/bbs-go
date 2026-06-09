@@ -7,7 +7,6 @@ import (
 	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/common/valid"
-	"temp/user/user"
 
 	"temp/interaction/rpc/interaction"
 	"temp/interaction/rpc/internal/svc"
@@ -33,28 +32,20 @@ func (l *GetMyFavouritesLogic) GetMyFavourites(in *interaction.GetMyFavouritesRe
 	// 参数校验
 	page := in.Page
 	pageSize := in.PageSize
-	userId := in.UserId
-	err := valid.IsValidInt(page, pageSize, userId)
+	userId, err := httpctx.GetUserId(l.ctx)
+	if err != nil {
+		logx.Errorf("get my favourites get user id failed: %v", err)
+		return nil, errs.New(errorcode.Unauthorized, err)
+	}
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	err = valid.IsValidInt(page, pageSize, userId)
 	if err != nil {
 		logx.Errorf("get my favourites invalid params: %v", err)
-		return nil, err
-	}
-
-	// 权限校验
-	id, err := httpctx.GetUserId(l.ctx)
-	if err != nil {
-		logx.Errorf("get my favourites user id failed: %v", err)
-		return nil, err
-	}
-	if id != userId {
-		logx.Errorf("get my favourites forbidden: user=%d", userId)
-		return nil, errs.New(errorcode.Forbidden, "无权限")
-	}
-
-	// 是否存在用户
-	_, err = l.svcCtx.UserRpc.ExistsUser(l.ctx, &user.IdRequest{Id: userId})
-	if err != nil {
-		logx.Errorf("get my favourites user not found: %v", err)
 		return nil, err
 	}
 

@@ -5,7 +5,7 @@ import (
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
 	"temp/common/models"
-	"temp/common/tokenUtil"
+	"temp/common/password"
 	"temp/user/userclient"
 
 	"temp/auth/auth"
@@ -60,13 +60,13 @@ func (l *RegisterLogic) Register(in *auth.RegisterReq) (*auth.RegisterResp, erro
 	}
 
 	// 注册
-	hashPassword, err := tokenUtil.HashPassword(in.Password)
+	hashPassword, err := password.HashPassword(in.Password)
 	if err != nil {
 		logx.Error("HashPassword error")
 		return nil, errs.Wrap(errorcode.ServerError, err, "register error")
 	}
 	newUser := models.NewUser(in.Username, hashPassword, in.Email)
-	if err := l.svcCtx.Db.Table("users").Create(&newUser).Error; err != nil {
+	if err := l.svcCtx.Db.Model(&models.User{}).Create(&newUser).Error; err != nil {
 		logx.Errorf("create user failed: %v", err)
 		return nil, errs.Wrap(errorcode.ServerError, err, "register error")
 	}

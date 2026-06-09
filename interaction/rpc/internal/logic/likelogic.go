@@ -8,7 +8,6 @@ import (
 	"temp/common/models"
 	"temp/common/valid"
 	"temp/post/rpc/post"
-	"temp/user/user"
 
 	"temp/interaction/rpc/interaction"
 	"temp/interaction/rpc/internal/svc"
@@ -32,34 +31,22 @@ func NewLikeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LikeLogic {
 
 func (l *LikeLogic) Like(in *interaction.LikeRequest) (*interaction.CommonResp, error) {
 	// 参数校验
-	userId := in.UserId
 	postId := in.PostId
 	op := in.Like
-	err := valid.IsValidInt(userId, postId)
+	userId, err := httpctx.GetUserId(l.ctx)
+	if err != nil {
+		logx.Errorf("like get user id failed: %v", err)
+		return nil, errs.New(errorcode.Unauthorized, err)
+	}
+	err = valid.IsValidInt(userId, postId)
 	if err != nil {
 		logx.Errorf("like invalid params: %v", err)
 		return nil, err
-	}
-	userRes, _ := l.svcCtx.UserRpc.ExistsUser(l.ctx, &user.IdRequest{Id: userId})
-	if !userRes.Data {
-		logx.Errorf("like user not found: id=%d", userId)
-		return nil, errs.New(errorcode.ErrUserNotExist, "用户不存在")
 	}
 	postRes, _ := l.svcCtx.PostRpc.ExistsPost(l.ctx, &post.IdPathReq{Id: postId})
 	if !postRes.Data {
 		logx.Errorf("like post not found: id=%d", postId)
 		return nil, errs.New(errorcode.NotFound, "帖子不存在")
-	}
-
-	// 检验权限
-	id, err := httpctx.GetUserId(l.ctx)
-	if err != nil {
-		logx.Errorf("like get user id failed: %v", err)
-		return nil, err
-	}
-	if id != userId {
-		logx.Errorf("like forbidden: user=%d", userId)
-		return nil, errs.New(errorcode.Forbidden, "无权限")
 	}
 
 	// 处理点赞

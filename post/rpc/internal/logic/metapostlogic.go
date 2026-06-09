@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 	"temp/common/valid"
 
@@ -39,7 +41,7 @@ func (l *MetaPostLogic) MetaPost(in *post.IdPathReq) (*post.PostMetaResp, error)
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
 	if res.Error != nil {
 		logx.Errorf("meta post query failed: %v", res.Error)
-		return nil, res.Error
+		return nil, errs.Wrap(errorcode.NotFound, res.Error, "帖子不存在")
 	}
 
 	logx.Infof("meta post success: id=%d", postId)

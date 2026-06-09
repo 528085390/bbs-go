@@ -27,9 +27,9 @@ func NewListSectionsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *List
 }
 
 func (l *ListSectionsLogic) ListSections(in *rpc.Empty) (*rpc.SectionListResponse, error) {
-	// 查询板块列表
+	// 查询可见板块列表
 	var sectionList []models.Section
-	res := l.svcCtx.Db.Model(&models.Section{}).Find(&sectionList)
+	res := l.svcCtx.Db.Model(&models.Section{}).Where("visibility = ?", true).Find(&sectionList)
 	if res.Error != nil {
 		logx.Errorf("list sections failed: %v", res.Error)
 		return nil, errs.Wrap(errorcode.ServerError, res.Error, "查询板块列表失败")
@@ -38,9 +38,6 @@ func (l *ListSectionsLogic) ListSections(in *rpc.Empty) (*rpc.SectionListRespons
 	// 封装返回结果
 	var sectionListResp []*rpc.SectionResponse
 	for _, section := range sectionList {
-		if !section.Visibility {
-			continue
-		}
 		sectionListResp = append(sectionListResp, &rpc.SectionResponse{
 			Id:          int64(section.ID),
 			Title:       section.Title,

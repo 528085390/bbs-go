@@ -3,6 +3,8 @@ package logic
 import (
 	"context"
 	"encoding/json"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 	"temp/common/mq/events"
 	"temp/common/valid"
@@ -38,11 +40,11 @@ func (l *GetPostLogic) GetPost(in *post.IdPathReq) (*post.PostResp, error) {
 	}
 
 	// 查询
-	var postRes post.PostResp
+	var postRes models.Post
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
 	if res.Error != nil {
 		logx.Errorf("get post failed: %v", res.Error)
-		return nil, res.Error
+		return nil, errs.Wrap(errorcode.NotFound, res.Error, "帖子不存在")
 	}
 
 	// 增加文章浏览数
@@ -55,16 +57,16 @@ func (l *GetPostLogic) GetPost(in *post.IdPathReq) (*post.PostResp, error) {
 
 	// 返回结果
 	return &post.PostResp{
-		Id:        postRes.Id,
+		Id:        int64(postRes.ID),
 		Title:     postRes.Title,
 		Content:   postRes.Content,
-		SectionId: postRes.SectionId,
-		AuthorId:  postRes.AuthorId,
+		SectionId: uint64(postRes.SectionID),
+		AuthorId:  postRes.AuthorID,
 		ViewCount: postRes.ViewCount,
 		Pinned:    postRes.Pinned,
 		Featured:  postRes.Featured,
-		CreatedAt: postRes.CreatedAt,
-		UpdatedAt: postRes.UpdatedAt,
+		CreatedAt: postRes.CreatedAt.String(),
+		UpdatedAt: postRes.UpdatedAt.String(),
 	}, nil
 
 }

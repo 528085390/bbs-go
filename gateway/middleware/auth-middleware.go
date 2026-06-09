@@ -8,6 +8,8 @@ import (
 	"temp/common/response"
 	"temp/common/tokenUtil"
 	"temp/gateway/config"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // matchPath 支持路径参数匹配（如 /api/posts/123 匹配 /api/posts/:id）
@@ -61,6 +63,7 @@ func AuthMiddleware(c config.Config) func(http.HandlerFunc) http.HandlerFunc {
 			// 3. 验证 Token
 			ok, userId, roles, err := tokenUtil.ValidateAndParseToken(c.JwtSecret, token)
 			if !ok || err != nil {
+				logx.Errorf("invalid token: %v", err)
 				writeError(w, errorcode.Unauthorized)
 				return
 			}

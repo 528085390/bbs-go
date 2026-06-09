@@ -113,15 +113,15 @@ func (l *SearchLogic) Search(in *proto.SearchRequest) (*proto.SearchResponse, er
 		}
 
 		// 获取作者信息
-		authorId := p.AuthorID
 		userRes, err := l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
-			Id:  authorId,
+			Id:  p.AuthorID,
 			Arg: "id",
 		})
 		if err != nil {
 			logx.Errorf("get user info error: %v", err)
+		} else if userRes != nil {
+			r.AuthorName = userRes.Username
 		}
-		r.AuthorName = userRes.Username
 
 		// 获取收藏信息
 		interactRes, err := l.svcCtx.InteractionRpc.GetPostFavoritesCount(l.ctx, &interaction.GetPostFavoritesCountRequest{
@@ -129,8 +129,9 @@ func (l *SearchLogic) Search(in *proto.SearchRequest) (*proto.SearchResponse, er
 		})
 		if err != nil {
 			logx.Errorf("get post favorites count error: %v", err)
+		} else if interactRes != nil {
+			r.FavouriteCount = interactRes.Total
 		}
-		r.FavouriteCount = interactRes.Total
 
 		// 获取评论数
 		commentRes, err := l.svcCtx.CommentRpc.GetCommentCount(l.ctx, &comment.GetCommentCountReq{
@@ -138,8 +139,9 @@ func (l *SearchLogic) Search(in *proto.SearchRequest) (*proto.SearchResponse, er
 		})
 		if err != nil {
 			logx.Errorf("get comments count error: %v", err)
+		} else if commentRes != nil {
+			r.CommentCount = commentRes.Count
 		}
-		r.CommentCount = commentRes.Count
 
 		searchResults = append(searchResults, &r)
 

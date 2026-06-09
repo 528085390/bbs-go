@@ -10,7 +10,6 @@ var (
 	Unauthorized = ErrorCode{Code: 10001, Msg: "未授权"}
 	Forbidden    = ErrorCode{Code: 10002, Msg: "无权限"}
 	NotFound     = ErrorCode{Code: 10003, Msg: "资源不存在"}
-	ParamError   = ErrorCode{Code: 10004, Msg: "参数错误"}
 	BadRequest   = ErrorCode{Code: 10004, Msg: "参数错误"}
 
 	UserNotFound = ErrorCode{Code: 20001, Msg: "用户不存在"}

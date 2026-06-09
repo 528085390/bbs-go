@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
+	"temp/common/httpctx"
 	"temp/common/models"
 	"time"
 
@@ -29,9 +30,20 @@ func NewUpdateUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 }
 
 func (l *UpdateUserInfoLogic) UpdateUserInfo(req *user.GetUserInfoRequest) (*user.UserInfoResponse, error) {
+	// 鉴权：只能修改自己的资料
+	userId, err := httpctx.GetUserId(l.ctx)
+	if err != nil {
+		logx.Errorf("update user get user id failed: %v", err)
+		return nil, errs.New(errorcode.Unauthorized, err)
+	}
+	if userId != req.Id {
+		logx.Errorf("update user forbidden: ctx=%d req=%d", userId, req.Id)
+		return nil, errs.New(errorcode.Forbidden, "无权限修改其他用户资料")
+	}
+
 	// find user && get old info
 	userRes := models.User{}
-	res := l.svcCtx.Db.Table("users").Find(&userRes, req.Id)
+	res := l.svcCtx.Db.Model(&models.User{}).Find(&userRes, req.Id)
 	if res.Error != nil {
 		logx.Error("find user in database error")
 		return nil, errs.Wrap(res.Error)
@@ -53,7 +65,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *user.GetUserInfoRequest) (*use
 	}
 	userRes.UpdatedAt = time.Now()
 
-	res = l.svcCtx.Db.Table("users").Save(&userRes)
+	res = l.svcCtx.Db.Model(&models.User{}).Save(&userRes)
 	if res.Error != nil {
 		logx.Errorf("update user failed: %v", res.Error)
 		return nil, errs.Wrap(res.Error)

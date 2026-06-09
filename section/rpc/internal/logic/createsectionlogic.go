@@ -5,6 +5,7 @@ import (
 
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
+	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/section/rpc/internal/svc"
 	"temp/section/rpc/section/rpc"
@@ -37,8 +38,14 @@ func (l *CreateSectionLogic) CreateSection(in *rpc.CreateSectionRequest) (*rpc.C
 		return nil, errs.New(errorcode.BadRequest, "参数错误")
 	}
 
+	// 鉴权：仅 admin 可创建板块
+	if err := httpctx.MustAdmin(l.ctx); err != nil {
+		logx.Errorf("create section forbidden: %v", err)
+		return nil, err
+	}
+
 	// 判断板块是否存在
-	res := l.svcCtx.Db.Table("sections").Where("title = ?", title).First(&models.Section{})
+	res := l.svcCtx.Db.Model(&models.Section{}).Where("title = ?", title).First(&models.Section{})
 	if res.Error == nil {
 		logx.Errorf("section already exists: title=%s", title)
 		return nil, errs.New(errorcode.BadRequest, "板块已存在")
@@ -51,7 +58,7 @@ func (l *CreateSectionLogic) CreateSection(in *rpc.CreateSectionRequest) (*rpc.C
 		OrderIndex:  orderIndex,
 		Visibility:  visibility,
 	}
-	res = l.svcCtx.Db.Table("sections").Create(&newSection)
+	res = l.svcCtx.Db.Model(&models.Section{}).Create(&newSection)
 	if res.Error != nil {
 		logx.Errorf("create section failed: %v", res.Error)
 		return nil, errs.Wrap(errorcode.ServerError, res.Error, "创建板块失败")

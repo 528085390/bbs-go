@@ -44,12 +44,12 @@ func (l *CreatePostLogic) CreatePost(req *post.PostRequest) (*post.PostResp, err
 	err = valid.IsValidString(title, content)
 	if err != nil {
 		logx.Errorf("create post invalid string params: %v", err)
-		return nil, errs.New(errorcode.ParamError, err)
+		return nil, errs.New(errorcode.BadRequest, err)
 	}
 	err = valid.IsValidInt(authorId, int64(sectionId))
 	if err != nil {
 		logx.Errorf("create post invalid int params: %v", err)
-		return nil, errs.New(errorcode.ParamError, err)
+		return nil, errs.New(errorcode.BadRequest, err)
 	}
 	user, err := l.svcCtx.UserRpc.GetUserInfoBy(l.ctx, &userclient.GetUserInfoRequest{
 		Id:  authorId,

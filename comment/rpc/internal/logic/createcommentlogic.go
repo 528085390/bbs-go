@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
+	"temp/common/httpctx"
 	"temp/common/models"
 	"temp/common/valid"
 	"temp/post/rpc/post"
-	"temp/user/user"
 	"time"
 
 	"temp/comment/rpc/comment"
@@ -35,9 +35,13 @@ func NewCreateCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comment.CommentResp, error) {
 	// 参数校验
 	postId := in.PostId
-	authorId := in.AuthorId
 	parentId := in.ParentId
-	err := valid.IsValidInt(postId, authorId)
+	authorId, err := httpctx.GetUserId(l.ctx)
+	if err != nil {
+		logx.Errorf("create comment get user id failed: %v", err)
+		return nil, errs.New(errorcode.Unauthorized, err)
+	}
+	err = valid.IsValidInt(postId)
 	if err != nil {
 		logx.Errorf("create comment invalid params: %v", err)
 		return nil, err
@@ -49,14 +53,6 @@ func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comme
 	if !exists {
 		logx.Errorf("post not found: id=%d", postId)
 		return nil, errs.New(errorcode.NotFound, fmt.Sprintf("帖子 %d 不存在", postId))
-	}
-
-	// 用户是否存在
-	userRes, _ := l.svcCtx.UserRpc.ExistsUser(l.ctx, &user.IdRequest{Id: authorId})
-	exists = userRes.Data
-	if !exists {
-		logx.Errorf("user not found: id=%d", authorId)
-		return nil, errs.New(errorcode.ErrUserNotExist, fmt.Sprintf("用户 %d 不存在", authorId))
 	}
 
 	// 父评论是否存在

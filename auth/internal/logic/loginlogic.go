@@ -5,6 +5,7 @@ import (
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
 	"temp/common/models"
+	passwordUtil "temp/common/password"
 	"temp/common/tokenUtil"
 
 	"temp/auth/auth"
@@ -38,13 +39,13 @@ func (l *LoginLogic) Login(in *auth.LoginReq) (*auth.LoginResp, error) {
 
 	// 查询用户
 	var user models.User
-	res := l.svcCtx.Db.Table("users").Where("username = ?", username).First(&user)
+	res := l.svcCtx.Db.Model(&models.User{}).Where("username = ?", username).First(&user)
 	if res.Error != nil {
 		logx.Errorf("find user in database err: %v", res.Error)
 		return nil, errs.Wrap(errorcode.ServerError, res.Error, "find user failed")
 	}
 
-	if !tokenUtil.CheckPasswordHash(password, user.Password) {
+	if !passwordUtil.CheckPasswordHash(password, user.Password) {
 		logx.Error("password is incorrect")
 		return nil, errs.New(errorcode.ErrPasswordIncorrect, "password is incorrect")
 	}

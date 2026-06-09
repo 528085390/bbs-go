@@ -2,12 +2,13 @@ package logic
 
 import (
 	"context"
+
 	"temp/common/errs"
 	"temp/common/errs/errorcode"
+	"temp/common/httpctx"
+	"temp/common/models"
 	"temp/section/rpc/internal/svc"
 	"temp/section/rpc/section/rpc"
-
-	"temp/common/models"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -37,6 +38,12 @@ func (l *UpdateSectionLogic) UpdateSection(in *rpc.UpdateSectionRequest) (*rpc.U
 	if title == "" || description == "" || orderIndex < 0 || id < 0 {
 		logx.Error("update section invalid params")
 		return nil, errs.New(errorcode.BadRequest, "参数错误")
+	}
+
+	// 鉴权：仅 admin 可更新板块
+	if err := httpctx.MustAdmin(l.ctx); err != nil {
+		logx.Errorf("update section forbidden: %v", err)
+		return nil, err
 	}
 
 	//封装新板块

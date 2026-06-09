@@ -13,7 +13,6 @@ import (
 	"temp/post/rpc/post"
 
 	"github.com/zeromicro/go-zero/core/logx"
-	"golang.org/x/exp/slices"
 )
 
 type DeletePostLogic struct {
@@ -37,16 +36,11 @@ func (l *DeletePostLogic) DeletePost(in *post.IdPathReq) (*post.CommonResp, erro
 	err := valid.IsValidInt(postId)
 	if err != nil {
 		logx.Errorf("delete post invalid params: %v", err)
-		return nil, errs.New(errorcode.ParamError, err)
+		return nil, errs.New(errorcode.BadRequest, err)
 	}
 	userId, err := httpctx.GetUserId(l.ctx)
 	if err != nil {
 		logx.Errorf("get user id failed: %v", err)
-		return nil, errs.New(errorcode.Unauthorized, err)
-	}
-	roles, err := httpctx.GetRoles(l.ctx)
-	if err != nil {
-		logx.Errorf("get roles failed: %v", err)
 		return nil, errs.New(errorcode.Unauthorized, err)
 	}
 	res := l.svcCtx.Db.Model(&models.Post{}).Where("id = ?", postId).First(&postRes)
@@ -55,8 +49,8 @@ func (l *DeletePostLogic) DeletePost(in *post.IdPathReq) (*post.CommonResp, erro
 		return nil, errs.Wrap(res.Error)
 	}
 
-	// 权限校验
-	if postRes.AuthorID != userId && !slices.Contains(roles, "admin") {
+	// 权限校验：作者本人或 admin 可删除
+	if postRes.AuthorID != userId && !httpctx.IsAdmin(l.ctx) {
 		logx.Errorf("delete post forbidden: user=%d post=%d", userId, postId)
 		return nil, errs.New(errorcode.Forbidden, fmt.Sprintf("用户 %d 无权限删除帖子 %d", userId, postId))
 	}

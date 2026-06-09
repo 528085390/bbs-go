@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/valid"
 
+	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -47,4 +50,23 @@ func GetRoles(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 	return role, nil
+}
+
+func MustAdmin(ctx context.Context) error {
+	roles, err := GetRoles(ctx)
+	if err != nil {
+		return errs.New(errorcode.Unauthorized, err)
+	}
+	if !slices.Contains(roles, "admin") {
+		return errs.New(errorcode.Forbidden, "无权限")
+	}
+	return nil
+}
+
+func IsAdmin(ctx context.Context) bool {
+	roles, err := GetRoles(ctx)
+	if err != nil {
+		return false
+	}
+	return slices.Contains(roles, "admin")
 }

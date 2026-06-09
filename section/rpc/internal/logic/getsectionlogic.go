@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"temp/common/errs"
+	"temp/common/errs/errorcode"
 	"temp/common/models"
 
 	"temp/section/rpc/internal/svc"
@@ -30,7 +32,7 @@ func (l *GetSectionLogic) GetSection(req *rpc.GetSectionRequest) (*rpc.SectionRe
 	res := l.svcCtx.Db.Model(&models.Section{}).Where("id = ?", sectionId).First(&section)
 	if res.Error != nil {
 		logx.Errorf("get section failed: %v", res.Error)
-		return nil, res.Error
+		return nil, errs.Wrap(errorcode.NotFound, res.Error, "板块不存在")
 	}
 
 	logx.Infof("get section success: id=%d", section.ID)
