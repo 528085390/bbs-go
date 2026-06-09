@@ -8,31 +8,31 @@ resources:
 images:
 - name: temp-auth
   newName: ghcr.io/528085390/bbs-go/auth
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-comment
   newName: ghcr.io/528085390/bbs-go/comment
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-file
   newName: ghcr.io/528085390/bbs-go/file
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-gateway
   newName: ghcr.io/528085390/bbs-go/gateway
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-interaction
   newName: ghcr.io/528085390/bbs-go/interaction
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-post
   newName: ghcr.io/528085390/bbs-go/post
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-search
   newName: ghcr.io/528085390/bbs-go/search
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-section
   newName: ghcr.io/528085390/bbs-go/section
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 - name: temp-user
   newName: ghcr.io/528085390/bbs-go/user
-  newTag: sha-c8d632750d06e42727f1c2678ae7fc1a7c404e58
+  newTag: sha-2838c4a9f5c4b919033b126a2f10e2394c07d652
 
 patches:
 - patch: |-
